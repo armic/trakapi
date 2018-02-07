@@ -1,0 +1,84 @@
+This is a git repo
+
+
+
+AuditTAK Rest API Documention
+
+Show All Users
+
+Returns json data about a single user.
+
+URL
+/users/{custid}
+
+Method:
+GET
+
+URL Params
+Required:
+
+//Customer ID
+custid=[integer]
+
+Data Params
+None
+
+Success Response:
+
+Code: 200 
+Content: {"users": [{"firstname":"ALISDAIR","lastname":"CHAMBERS","username":"alisdair","password":"password","email":"alisdair@henchman.com.au","photo":null,"custid":"2", ........... }
+
+Error Response:
+
+Code: 404 NOT FOUND 
+Content: {"error":"No records found.")
+
+OR
+
+Code: 401 UNAUTHORIZED 
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/users/2", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+
+
+// Login a user
+
+Log User
+
+Returns json data about a single user.
+
+URL
+/user/{username}/{password}
+
+Method:
+GET
+
+URL Params
+Required:
+
+username=[string]
+password=[string]
+
+Data Params
+None
+
+Success Response:
+
+Code: 200 
+Content: {"success":[{"firstname":"ALISDAIR","lastname":"CHAMBERS","username":"alisdair","password":"password","email":"alisdair@henchman.com.au","photo":null,"custid":"2","active":"1","auditrak":"1","role":"0","userid":"04611092E53480"}]}
+
+Error Response:
+
+Code: 404 NOT FOUND 
+Content: { error : "User doesn't exist" }
+
+OR
+
+Code: 401 UNAUTHORIZED 
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/user/login/alisdair/password", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
