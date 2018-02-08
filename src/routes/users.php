@@ -209,6 +209,57 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
 });
 
 
+// Get specific user
+
+
+$app->get('/api/user/{id}', function(Request $request, Response $response) {
+
+    $id = $request->getAttribute('id');
+    // Select statement
+
+    $sql = "SELECT DISTINCT\n".
+        "employees.firstname,\n".
+        "employees.lastname,\n".
+        "employees.username,\n".
+        "employees.`password`,\n".
+        "employees.email,\n".
+        "employees.photo,\n".
+        "users.id,\n".
+        "users.custid,\n".
+        "users.active,\n".
+        "users.auditrak,\n".
+        "users.role,\n".
+        "users.userid\n".
+        "FROM\n".
+        "users\n".
+        "LEFT JOIN employees ON employees.userid = users.userid\n".
+        "WHERE\n".
+        "users.id = $id";
+
+    $user = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($user) {
+            echo  '{"user": '. json_encode($user). '}';
+            $users = null;
+            $db = null;
+        } else {
+            echo '{"error":"User not found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
 // Grant user access to system. This assumes that the user did not exist
 
 $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Response $response) {
