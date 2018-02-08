@@ -81,10 +81,13 @@ function isUserGranted($custid,$userid) {
         $db = $db->connect();
 
         foreach($db->query($sql, PDO::FETCH_ASSOC) as $row){
+            echo "Value active is ".$row['active']. "UserID ". $row['userid'];
             if($row['active'] == 0 or $row['active'] == null) {
 
+              echo "Active = False";
                return false;
             } else {
+                echo "Active = True";
                 return true;
             }
 
@@ -280,7 +283,25 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
          // Need to set auditrak value to 1
 
+            $sql = "UPDATE users  SET active = 1 WHERE auditrak =1 AND custid = $custid AND userid = '$userid'";
+            try{
+                // Get DB object
+                $db= new db();
+                $db = $db->connect();
+                $stmt = $db->prepare($sql);
 
+                $stmt->bindParam(':custid', $custid);
+                $stmt->bindParam(':userid', $userid);
+
+
+                $stmt->execute();
+                $db = null;
+                echo '{"notice": {"Message": "User Granted"}';
+
+            }catch(PDOException $e){
+                echo '{"error": {"Message": '.$e->getMessage().'}';
+
+            }
 
         }
 
