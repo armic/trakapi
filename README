@@ -1,12 +1,46 @@
-This is a git repo
-
-
-
 AuditTAK Rest API Documention
+
+Show User
+
+Returns json data about a single user.
+
+URL
+/user/{id}
+
+Method:
+GET
+
+URL Params
+Required:
+
+
+id=[integer]
+
+Data Params
+None
+
+Success Response:
+
+Code: 200 
+Content: {"user": [{"firstname":"ALISDAIR","lastname":"CHAMBERS","username":"alisdair","password":"password","email":"alisdair@henchman.com.au","photo":null,"id":"342","custid":"2","active":"1","auditrak":"1","role":"0","userid":"04611092E53480"}]}
+
+Error Response:
+
+Code: 404 NOT FOUND 
+Content: {"error":"User not found.")
+
+OR
+
+Code: 401 UNAUTHORIZED 
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/user/2", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
 
 Show All Users
 
-Returns json data about a single user.
+Returns json data about all users.
 
 URL
 /users/{custid}
@@ -47,7 +81,7 @@ javascript $.ajax({ url: "/users/2", dataType: "json", type : "GET", success : f
 
 Log User
 
-Returns json data about a single user.
+Returns json data about user login.
 
 URL
 /user/{username}/{password}
