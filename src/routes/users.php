@@ -81,13 +81,13 @@ function isUserGranted($custid,$userid) {
         $db = $db->connect();
 
         foreach($db->query($sql, PDO::FETCH_ASSOC) as $row){
-            echo "Value active is ".$row['active']. "UserID ". $row['userid'];
+
             if($row['active'] == 0 or $row['active'] == null) {
 
-              echo "Active = False";
+
                return false;
             } else {
-                echo "Active = True";
+
                 return true;
             }
 
@@ -119,10 +119,11 @@ $app->get('/api/user/login/{username}/{password}', function(Request $request, Re
             "users.active,\n".
             "users.auditrak,\n".
             "users.role,\n".
+            "users.level,\n".
             "users.userid\n".
             "FROM\n".
             "users\n".
-            "LEFT JOIN employees ON employees.userid = users.userid\n".
+            "LEFT JOIN employees ON employees.id = users.userid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
             "users.active = 1 AND\n".
@@ -181,7 +182,7 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
             "users.userid\n".
             "FROM\n".
             "users\n".
-            "LEFT JOIN employees ON employees.userid = users.userid\n".
+            "LEFT JOIN employees ON employees.id = users.userid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
             "users.active = 1 AND\n".
@@ -235,7 +236,7 @@ $app->get('/api/user/{id}', function(Request $request, Response $response) {
         "users.userid\n".
         "FROM\n".
         "users\n".
-        "LEFT JOIN employees ON employees.userid = users.userid\n".
+        "LEFT JOIN employees ON employees.id = users.userid\n".
         "WHERE\n".
         "users.id = $id";
 
