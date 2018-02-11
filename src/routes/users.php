@@ -109,6 +109,7 @@ $app->get('/api/user/login/{username}/{password}', function(Request $request, Re
     // Select statement
 
     $sql =  "SELECT DISTINCT\n".
+            "employees.id,\n".
             "employees.firstname,\n".
             "employees.lastname,\n".
             "employees.username,\n".
@@ -127,7 +128,8 @@ $app->get('/api/user/login/{username}/{password}', function(Request $request, Re
             "WHERE\n".
             "users.auditrak = 1 AND\n".
             "users.active = 1 AND\n".
-            "employees.password = '$password'";
+            "employees.password = '". md5($password). "'";
+
       // Check username
       if (strpos($username,'@')) {
          $sql = $sql." AND employees.email = '$username'";
