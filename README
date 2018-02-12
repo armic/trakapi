@@ -216,7 +216,14 @@ Required:
 custid=[integer]
 
 Data Params
-None
+
+firstname
+lastname
+email
+mobilenumber
+username
+password
+
 
 Success Response:
 
