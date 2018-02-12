@@ -11,94 +11,6 @@ use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 
 
-function isUserExist($custid,$userid) {
-
-    $sql = "SELECT\n".
-            "users.id,\n".
-            "users.custid,\n".
-            "users.active,\n".
-            "users.kabtrak,\n".
-            "users.portatrak,\n".
-            "users.cribtrak,\n".
-            "users.auditrak,\n".
-            "users.role,\n".
-            "users.userid\n".
-            "FROM\n".
-            "users\n".
-            "WHERE\n".
-            "users.auditrak = 1 AND\n".
-            "users.custid = $custid AND\n".
-            "users.userid = '$userid'";
-
-    $user = null;
-
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-        $stmtuser = $db->query($sql);
-        $user = $stmtuser->fetchAll(PDO::FETCH_OBJ);
-
-        if($user) {
-
-            return true;
-
-        } else {
-            return false;
-        }
-
-
-    }catch(PDOException $e){
-        return false;
-
-    }
-}
-
-function isUserGranted($custid,$userid) {
-
-    $sql = "SELECT\n".
-        "users.id,\n".
-        "users.custid,\n".
-        "users.active,\n".
-        "users.kabtrak,\n".
-        "users.portatrak,\n".
-        "users.cribtrak,\n".
-        "users.auditrak,\n".
-        "users.role,\n".
-        "users.userid\n".
-        "FROM\n".
-        "users\n".
-        "WHERE\n".
-        "users.auditrak = 1 AND\n".
-        "users.custid = $custid AND\n".
-        "users.userid = '$userid'";
-
-    $user = null;
-
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-
-        foreach($db->query($sql, PDO::FETCH_ASSOC) as $row){
-
-            if($row['active'] == 0 or $row['active'] == null) {
-
-
-               return false;
-            } else {
-
-                return true;
-            }
-
-        }
-
-
-    }catch(PDOException $e){
-        return false;
-
-    }
-}
 
 
 // Login
@@ -171,6 +83,7 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
     // Select statement
 
     $sql = "SELECT DISTINCT\n".
+            "employees.id,\n".
             "employees.firstname,\n".
             "employees.lastname,\n".
             "employees.username,\n".
@@ -224,6 +137,7 @@ $app->get('/api/user/{id}', function(Request $request, Response $response) {
     // Select statement
 
     $sql = "SELECT DISTINCT\n".
+        "employees.id,\n".
         "employees.firstname,\n".
         "employees.lastname,\n".
         "employees.username,\n".
@@ -240,7 +154,7 @@ $app->get('/api/user/{id}', function(Request $request, Response $response) {
         "users\n".
         "LEFT JOIN employees ON employees.id = users.userid\n".
         "WHERE\n".
-        "users.id = $id";
+        "users.userid = $id";
 
     $user = null;
 
@@ -266,7 +180,6 @@ $app->get('/api/user/{id}', function(Request $request, Response $response) {
     }
 });
 
-// Grant user access to system. This assumes that the user did not exist
 
 $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Response $response) {
 
@@ -277,9 +190,12 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
     $active = $request->getParam('active');
     $role = $request->getParam('role');
 
-    if (isUserExist($custid,$userid)) {
+    $trk = new clstrak();
+
+
+    if ($trk->isUserExist($custid,$userid)) {
        // User exist, check if auditrak is = 1
-        if (isUserGranted($custid, $userid)) {
+        if ($trk->isUserGranted($custid, $userid)) {
 
             echo '{"Warning: {"Message": "User is already granted access to auditTRAK"}';
         } else {
@@ -310,18 +226,24 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
 
     }else {
-        $sql = "INSERT INTO users (custid,active,auditrak,role,userid) VALUES (:custid,1, :auditrak, :role, :userid)";
+        $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :level)";
         try{
             // Get DB object
             $db= new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
+            $role = 0;
+            $active = 1;
+            $auditrak = 1;
+            $level = 1;
+
             $stmt->bindParam(':custid', $custid);
             $stmt->bindParam(':active', $active);
             $stmt->bindParam(':auditrak', $auditrak);
             $stmt->bindParam(':role', $role);
             $stmt->bindParam(':userid', $userid);
+            $stmt->bindParam(':level', $level);
 
 
             $stmt->execute();

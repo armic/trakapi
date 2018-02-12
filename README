@@ -116,3 +116,127 @@ Content: { error : "You are unauthorized to make this request." }
 Sample Call:
 
 javascript $.ajax({ url: "/user/login/alisdair/password", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+
+
+
+EMPLOYEES
+
+Show Employee
+
+Returns json data about a single employee.
+
+URL
+/employee/{id}
+
+Method:
+GET
+
+URL Params
+Required:
+
+
+id=[integer]
+
+Data Params
+None
+
+Success Response:
+
+Code: 200
+Content: {"Employee": [{"id":"562","firstname":"ALISDAIR","lastname":"CHAMBERS","username":"alisdair","password":"5f4dcc3b5aa765d61d8327deb882cf99","email":"alisdair@henchman.com.au","photo":null,"custid":"2"}]}
+
+Error Response:
+
+Code: 404 NOT FOUND
+Content: {"error":"Employee not found.")
+
+OR
+
+Code: 401 UNAUTHORIZED
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/employee/562", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+
+
+
+Get Employee List
+
+Returns json data about a all employees for specific customer.
+
+URL
+/employees/{custid}
+
+Method:
+GET
+
+URL Params
+Required:
+
+
+custid=[integer]
+
+Data Params
+None
+
+Success Response:
+
+Code: 200
+Content: {"Employees": [{"id":"562","firstname":"ALISDAIR","lastname":"CHAMBERS","username":"alisdair","password":"5f4dcc3b5aa765d61d8327deb882cf99","email":"alisdair@henchman.com.au","photo":null,"custid":"2"},{"id":"605","firstname":"GABRIEL","lastname":"TOLENTINO","username":"artolentino","password":"23954fa85672bc4895bf936295b5e05a","email":"artolentino@gmail.com","photo":null,"custid":"2"},{"id":"607","firstname":"GABRIEL","lastname":"TOLENTINO","username":"artolentino","password":"23954fa85672bc4895bf936295b5e05a","email":"art@gmail.com","photo":null,"custid":"2"}]}
+
+Error Response:
+
+Code: 404 NOT FOUND
+Content: {"error":"No records found.")
+
+OR
+
+Code: 401 UNAUTHORIZED
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/employees/2", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+
+
+Add Employee record
+
+
+URL
+/employee/add/{custid}
+
+Method:
+GET
+
+URL Params
+Required:
+
+
+custid=[integer]
+
+Data Params
+None
+
+Success Response:
+
+Code: 200
+Content: {"notice": {"text": "Employee Added"}
+
+Error Response:
+
+
+
+Code: 404 NOT FOUND
+Content: {"warning": {"Message": "Email already exist"}
+
+OR
+
+Code: 401 UNAUTHORIZED
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/employee/add/2", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+
+

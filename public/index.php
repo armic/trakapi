@@ -5,6 +5,7 @@ use \Slim\Http\Response as Response;
 //use \Psr\Http\Message\ResponseInterface as Response;
 require '../vendor/autoload.php';
 require '../src/config/db.php';
+require '../src/config/clstrak.php';
 
 $app = new \Slim\App;
 //Enable debugging (on by default)
@@ -30,4 +31,5 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 
 // User
 require '../src/routes/users.php';
+require '../src/routes/employees.php';
 $app->run();
