@@ -247,3 +247,38 @@ Sample Call:
 javascript $.ajax({ url: "/employee/add/2", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
 
 
+Count Employee record
+
+
+URL
+/employee/count/{custid}
+
+Method:
+GET
+
+URL Params
+Required:
+
+
+custid=[integer]
+
+Data Params
+
+
+
+Success Response:
+
+Code: 200
+Content: {"employee_count ": 3}
+
+Error Response:
+
+
+Code: 401 UNAUTHORIZED
+Content: { error : "You are unauthorized to make this request." }
+
+Sample Call:
+
+javascript $.ajax({ url: "/employee/count/2", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+
+
