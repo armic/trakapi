@@ -5,37 +5,39 @@
  * Date: 2/12/18
  * Time: 10:31 AM
  */
-class clstrak{
+class clstrak
+{
 
-    public function isUserExist($custid,$userid) {
+    public function isUserExist($custid, $userid)
+    {
 
-        $sql = "SELECT\n".
-            "users.id,\n".
-            "users.custid,\n".
-            "users.active,\n".
-            "users.kabtrak,\n".
-            "users.portatrak,\n".
-            "users.cribtrak,\n".
-            "users.auditrak,\n".
-            "users.role,\n".
-            "users.userid\n".
-            "FROM\n".
-            "users\n".
-            "WHERE\n".
-            "users.auditrak = 1 AND\n".
-            "users.custid = $custid AND\n".
+        $sql = "SELECT\n" .
+            "users.id,\n" .
+            "users.custid,\n" .
+            "users.active,\n" .
+            "users.kabtrak,\n" .
+            "users.portatrak,\n" .
+            "users.cribtrak,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.userid\n" .
+            "FROM\n" .
+            "users\n" .
+            "WHERE\n" .
+            "users.auditrak = 1 AND\n" .
+            "users.custid = $custid AND\n" .
             "users.userid = '$userid'";
 
         $user = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmtuser = $db->query($sql);
             $user = $stmtuser->fetchAll(PDO::FETCH_OBJ);
 
-            if($user) {
+            if ($user) {
 
                 return true;
 
@@ -44,40 +46,41 @@ class clstrak{
             }
 
 
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             return false;
 
         }
     }
 
-    public function isUserGranted($custid,$userid) {
+    public function isUserGranted($custid, $userid)
+    {
 
-        $sql = "SELECT\n".
-            "users.id,\n".
-            "users.custid,\n".
-            "users.active,\n".
-            "users.kabtrak,\n".
-            "users.portatrak,\n".
-            "users.cribtrak,\n".
-            "users.auditrak,\n".
-            "users.role,\n".
-            "users.userid\n".
-            "FROM\n".
-            "users\n".
-            "WHERE\n".
-            "users.custid = $custid AND\n".
+        $sql = "SELECT\n" .
+            "users.id,\n" .
+            "users.custid,\n" .
+            "users.active,\n" .
+            "users.kabtrak,\n" .
+            "users.portatrak,\n" .
+            "users.cribtrak,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.userid\n" .
+            "FROM\n" .
+            "users\n" .
+            "WHERE\n" .
+            "users.custid = $custid AND\n" .
             "users.userid = '$userid'";
 
         $user = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
 
-            foreach($db->query($sql, PDO::FETCH_ASSOC) as $row){
+            foreach ($db->query($sql, PDO::FETCH_ASSOC) as $row) {
 
-                if($row['auditrak'] == 0 or $row['auditrak'] == null) {
+                if ($row['auditrak'] == 0 or $row['auditrak'] == null) {
 
 
                     return false;
@@ -89,30 +92,31 @@ class clstrak{
             }
 
 
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             return false;
 
         }
     }
 
-    public function isEmployeeEmailExist($email) {
+    public function isEmployeeEmailExist($email)
+    {
 
-        $sql = "SELECT email\n".
-               "FROM\n".
-               "employees\n".
-               "WHERE\n".
-               "employees.email = '$email'";
+        $sql = "SELECT email\n" .
+            "FROM\n" .
+            "employees\n" .
+            "WHERE\n" .
+            "employees.email = '$email'";
 
         $employees = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmtuser = $db->query($sql);
             $employees = $stmtuser->fetchAll(PDO::FETCH_OBJ);
 
-            if($employees) {
+            if ($employees) {
 
                 return true;
 
@@ -121,30 +125,31 @@ class clstrak{
             }
 
 
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             return false;
 
         }
     }
 
-    public function isUsernameExist($username) {
+    public function isUsernameExist($username)
+    {
 
-        $sql = "SELECT username\n".
-            "FROM\n".
-            "employees\n".
-            "WHERE\n".
+        $sql = "SELECT username\n" .
+            "FROM\n" .
+            "employees\n" .
+            "WHERE\n" .
             "employees.username = '$username'";
 
         $employees = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmtuser = $db->query($sql);
             $employees = $stmtuser->fetchAll(PDO::FETCH_OBJ);
 
-            if($employees) {
+            if ($employees) {
 
                 return true;
 
@@ -153,13 +158,48 @@ class clstrak{
             }
 
 
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             return false;
 
         }
     }
 
 
+    public function isTailNumberExist($tailnumber, $custid)
+    {
+
+        $sql = "SELECT number\n" .
+            "FROM\n" .
+            "tails\n" .
+            "WHERE\n" .
+            "tails.custid = $custid\n" .
+            "AND tails.number = '$tailnumber'";
+
+        $tails = null;
+
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if ($tails) {
+
+                return true;
+
+            } else {
+                return false;
+            }
 
 
+        } catch (PDOException $e) {
+            return false;
+
+        }
+    }
 }
+
+
+
+
