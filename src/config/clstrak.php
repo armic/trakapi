@@ -58,9 +58,6 @@ class clstrak
             "users.id,\n" .
             "users.custid,\n" .
             "users.active,\n" .
-            "users.kabtrak,\n" .
-            "users.portatrak,\n" .
-            "users.cribtrak,\n" .
             "users.auditrak,\n" .
             "users.role,\n" .
             "users.userid\n" .
@@ -68,6 +65,7 @@ class clstrak
             "users\n" .
             "WHERE\n" .
             "users.custid = $custid AND\n" .
+            "users.auditrak = 1 AND\n".
             "users.userid = '$userid'";
 
         $user = null;
@@ -79,7 +77,7 @@ class clstrak
 
             foreach ($db->query($sql, PDO::FETCH_ASSOC) as $row) {
 
-                if ($row['auditrak'] == 0 or $row['auditrak'] == null) {
+                if ($row['active'] == 0 or $row['active'] == null) {
 
 
                     return false;

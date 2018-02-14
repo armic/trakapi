@@ -39,6 +39,7 @@ $app->get('/api/user/login/{username}/{password}', function(Request $request, Re
             "LEFT JOIN employees ON employees.id = users.userid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
+            "users.active = 1 AND\n".
             "employees.password = '". md5($password). "'";
 
       // Check username
@@ -99,7 +100,6 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
             "LEFT JOIN employees ON employees.id = users.userid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
-            "users.active = 1 AND\n".
             "users.custid = $custid";
 
     $users = null;
@@ -130,9 +130,9 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
 // Get specific user
 
 
-$app->get('/api/user/{id}', function(Request $request, Response $response) {
+$app->get('/api/user/{userid}', function(Request $request, Response $response) {
 
-    $id = $request->getAttribute('id');
+    $userid = $request->getAttribute('userid');
     // Select statement
 
     $sql = "SELECT DISTINCT\n".
@@ -153,7 +153,10 @@ $app->get('/api/user/{id}', function(Request $request, Response $response) {
         "users\n".
         "LEFT JOIN employees ON employees.id = users.userid\n".
         "WHERE\n".
-        "users.userid = $id";
+        "users.userid = $userid AND\n".
+        "users.auditrak =1";
+
+      echo $sql;
 
     $user = null;
 
@@ -203,7 +206,7 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
          // Need to set auditrak value to 1
 
-            $sql = "UPDATE users  SET auditrak = 1 WHERE custid = $custid AND userid = '$userid'";
+            $sql = "UPDATE users  SET active = 1 WHERE custid = $custid AND userid = '$userid' AND auditrak = 1";
             try{
                 // Get DB object
                 $db= new db();
@@ -261,25 +264,75 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
 });
 
+
+// Revoke user access to AuditTRAK
+
+$app->post('/api/user/revoke/{userid}/{custid}', function(Request $request, Response $response) {
+
+    $userid = $request->getAttribute('userid');
+    $custid = $request->getAttribute('custid');
+
+    $auditrak      = $request->getParam('auditrak');
+    $active = $request->getParam('active');
+    $role = $request->getParam('role');
+
+    $trk = new clstrak();
+
+    if (!$trk->isUserExist($custid,$userid)) {
+        echo '{"Warning: {"Message": "User does not exist"}';
+
+    } else {
+
+        if ($trk->isUserGranted($custid, $userid)) {
+
+            // Do an update here
+            $sql = "UPDATE users  SET active = 0 WHERE custid = $custid AND userid = '$userid' AND auditrak = 1";
+            try{
+                // Get DB object
+                $db= new db();
+                $db = $db->connect();
+                $stmt = $db->prepare($sql);
+
+                $stmt->bindParam(':custid', $custid);
+                $stmt->bindParam(':userid', $userid);
+
+
+                $stmt->execute();
+                $db = null;
+                echo '{"notice": {"Message": "User access revoked"}';
+
+            }catch(PDOException $e){
+                echo '{"error": {"Message": '.$e->getMessage().'}';
+
+            }
+
+
+        }else {
+            echo '{"Warning: {"Message": "User access already revoked!"}';
+
+        }
+    }
+
+
+
+});
 // Update user record
 
-$app->put('/api/user/update/{id}', function(Request $request, Response $response) {
+$app->put('/api/user/update/{userid}/{custid}', function(Request $request, Response $response) {
 
-    $id = $request->getAttribute('id');
+    $userid = $request->getAttribute('userid');
+    $custid = $request->getAttribute('custid');
 
     $role = $request->getParam('role');
-    $active   = $request->getParam('active');
-    $auditrak = $request->getParam('auditrak');
     $level = $request->getParam('level');
 
 
 
     $sql = "UPDATE users SET
                    role = :role,
-                   active = :activee,
-                   auditrak = :auditrak,
-             WHERE id = $id";
-
+                   level = :level
+             WHERE userid = $userid AND custid = $custid AND auditrak= 1";
+   echo $sql;
     try{
         // Get DB object
         $db= new db();
@@ -288,8 +341,6 @@ $app->put('/api/user/update/{id}', function(Request $request, Response $response
 
         // $stmt->bindParam(':userid', $userid);
         $stmt->bindParam(':role', $role);
-        $stmt->bindParam(':active', $active);
-        $stmt->bindParam(':auditrak', $lauditrak);
         $stmt->bindParam(':level', $level);
 
 

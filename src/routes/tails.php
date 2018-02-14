@@ -19,11 +19,9 @@ $app->get('/api/tails/{custid}', function(Request $request, Response $response) 
     $sql = "SELECT DISTINCT\n".
         "tails.id,\n".
         "tails.number,\n".
-        "tails.description,\n".
-        "tails.username,\n".
+        "tails.description\n".
         "FROM tails\n".
         "WHERE custid = $custid";
-
     $tails = null;
 
     try{
@@ -46,5 +44,54 @@ $app->get('/api/tails/{custid}', function(Request $request, Response $response) 
         echo '{"error": {"Message": '.$e->getMessage().'}';
 
     }
+});
+
+
+// Add new tail
+
+$app->post('/api/tail/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $number = $request-> getParam('number');
+    $description = $request->getParam('description');
+    $createddate = date("Y-m-d h:i:sa");
+
+    $trk = new clstrak();
+
+    if($trk->isTailNumberExist($number,$custid))
+    {
+            echo '{"warning": {"Message": "Tail already exist"}';
+
+    }else {
+
+        $sql = "INSERT INTO tails (custid, number, description,createddate) VALUES 
+            (:custid, :number,:description, :createddate)";
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindParam(':custid', $custid);
+            $stmt->bindParam(':number', $number);
+            $stmt->bindParam(':description', $description);
+            $stmt->bindParam(':createddate', $createddate);
+
+
+            $stmt->execute();
+            $db = null;
+            echo '{"notice": {"text": "Tail Added"}';
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+
+
+
+
+    }
+
+
 });
 
