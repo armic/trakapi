@@ -24,7 +24,6 @@ class clstrak
             "FROM\n" .
             "users\n" .
             "WHERE\n" .
-            "users.auditrak = 1 AND\n" .
             "users.custid = $custid AND\n" .
             "users.userid = '$userid'";
 
@@ -113,8 +112,8 @@ class clstrak
             // Get DB object
             $db = new db();
             $db = $db->connect();
-            $stmtuser = $db->query($sql);
-            $employees = $stmtuser->fetchAll(PDO::FETCH_OBJ);
+            $stmt = $db->query($sql);
+            $employees = $stmt->fetchAll(PDO::FETCH_OBJ);
 
             if ($employees) {
 
