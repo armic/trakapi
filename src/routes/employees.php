@@ -188,7 +188,18 @@ $app->post('/api/employee/add/{custid}', function(Request $request, Response $re
 
     if($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username))
     {
-        echo '{"warning": {"Message": "Email/Username already exist"}';
+        if($trk->isEmployeeEmailExist($email)) {
+            echo '{"warning": {"Message": "Email already exist"}';
+        };
+
+        if($trk->isUsernameExist($username)) {
+            echo '{"warning": {"Message": "Username already exist"}';
+        };
+
+        if($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username)) {
+            echo '{"warning": {"Message": "Username/Email  already exist"}';
+        };
+
     }else {
 
         $sql = "INSERT INTO employees (firstname, lastname, email,mobilenumber, custid,createddate,username,password) VALUES 
