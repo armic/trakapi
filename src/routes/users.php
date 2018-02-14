@@ -39,7 +39,6 @@ $app->get('/api/user/login/{username}/{password}', function(Request $request, Re
             "LEFT JOIN employees ON employees.id = users.userid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
-            "users.active = 1 AND\n".
             "employees.password = '". md5($password). "'";
 
       // Check username
@@ -180,6 +179,7 @@ $app->get('/api/user/{id}', function(Request $request, Response $response) {
     }
 });
 
+// Grant user access to AuditTRAK
 
 $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Response $response) {
 
@@ -195,6 +195,7 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
     if ($trk->isUserExist($custid,$userid)) {
        // User exist, check if auditrak is = 1
+
         if ($trk->isUserGranted($custid, $userid)) {
 
             echo '{"Warning: {"Message": "User is already granted access to auditTRAK"}';
@@ -202,7 +203,7 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
          // Need to set auditrak value to 1
 
-            $sql = "UPDATE users  SET active = 1 WHERE auditrak =1 AND custid = $custid AND userid = '$userid'";
+            $sql = "UPDATE users  SET auditrak = 1 WHERE custid = $custid AND userid = '$userid'";
             try{
                 // Get DB object
                 $db= new db();
@@ -258,9 +259,49 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
     }
 
+});
 
+// Update user record
+
+$app->put('/api/user/update/{id}', function(Request $request, Response $response) {
+
+    $id = $request->getAttribute('id');
+
+    $role = $request->getParam('role');
+    $active   = $request->getParam('active');
+    $auditrak = $request->getParam('auditrak');
+    $level = $request->getParam('level');
+
+
+
+    $sql = "UPDATE users SET
+                   role = :role,
+                   active = :activee,
+                   auditrak = :auditrak,
+             WHERE id = $id";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        // $stmt->bindParam(':userid', $userid);
+        $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':active', $active);
+        $stmt->bindParam(':auditrak', $lauditrak);
+        $stmt->bindParam(':level', $level);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "User updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
 
 
 });
 
-?>
