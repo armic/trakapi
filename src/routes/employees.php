@@ -186,12 +186,12 @@ $app->post('/api/employee/add/{custid}', function(Request $request, Response $re
 
     $trk = new clstrak();
 
-    if($trk->isEmployeeEmailExist($email))
+    if($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username))
     {
-        echo '{"warning": {"Message": "Email already exist"}';
+        echo '{"warning": {"Message": "Email/Username already exist"}';
     }else {
 
-        $sql = "INSERT INTO employees (firstname, lastname, email,mobilenumber, custId,createddate,username,password) VALUES 
+        $sql = "INSERT INTO employees (firstname, lastname, email,mobilenumber, custid,createddate,username,password) VALUES 
             (:firstname, :lastname,:email, :mobilenumber,  :custid, :createddate, :username, :password)";
         try{
             // Get DB object
