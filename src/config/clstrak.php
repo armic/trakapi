@@ -65,7 +65,6 @@ class clstrak{
             "FROM\n".
             "users\n".
             "WHERE\n".
-            "users.auditrak = 1 AND\n".
             "users.custid = $custid AND\n".
             "users.userid = '$userid'";
 
@@ -78,7 +77,7 @@ class clstrak{
 
             foreach($db->query($sql, PDO::FETCH_ASSOC) as $row){
 
-                if($row['active'] == 0 or $row['active'] == null) {
+                if($row['auditrak'] == 0 or $row['auditrak'] == null) {
 
 
                     return false;
@@ -103,6 +102,38 @@ class clstrak{
                "employees\n".
                "WHERE\n".
                "employees.email = '$email'";
+
+        $employees = null;
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmtuser = $db->query($sql);
+            $employees = $stmtuser->fetchAll(PDO::FETCH_OBJ);
+
+            if($employees) {
+
+                return true;
+
+            } else {
+                return false;
+            }
+
+
+        }catch(PDOException $e){
+            return false;
+
+        }
+    }
+
+    public function isUsernameExist($username) {
+
+        $sql = "SELECT username\n".
+            "FROM\n".
+            "employees\n".
+            "WHERE\n".
+            "employees.username = '$username'";
 
         $employees = null;
 
