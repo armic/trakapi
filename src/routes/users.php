@@ -1,5 +1,10 @@
 <?php
 /**
+ * Copyright (c) 2018. Gabriel A. Tolentino
+ * Henchman Products PTY.
+ */
+
+/**
  * Created by PhpStorm.
  * User: artolentino
  * Date: 2/2/18

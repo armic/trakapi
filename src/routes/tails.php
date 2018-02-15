@@ -1,5 +1,10 @@
 <?php
 /**
+ * Copyright (c) 2018. Gabriel A. Tolentino
+ * Henchman Products PTY.
+ */
+
+/**
  * Created by PhpStorm.
  * User: artolentino
  * Date: 2/14/18
@@ -87,8 +92,40 @@ $app->post('/api/tail/add/{custid}', function(Request $request, Response $respon
 
         }
 
+    }
 
 
+});
+
+
+//Update tail
+
+$app->put('/api/tail/update/{number}/{custid}', function(Request $request, Response $response) {
+
+    $number = $request->getAttribute('number');
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+
+
+    $sql = "UPDATE tails SET
+                   description = :description
+                  
+             WHERE number = '$number' AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':description', $description);
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Tail updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
 
     }
 

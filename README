@@ -14,7 +14,7 @@ URL Params
 Required:
 
 
-id=[integer]
+id=[integer] // Customer id
 
 Data Params
 None

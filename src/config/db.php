@@ -1,6 +1,10 @@
 <?php
+/**
+ * Copyright (c) 2018. Gabriel A. Tolentino
+ * Henchman Products PTY.
+ */
 
-  class db{
+class db{
       //Properties
       /*private  $dbhost = 'localhost';
       private  $dbuser = 'henchman_root';
