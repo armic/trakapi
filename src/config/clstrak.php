@@ -1,7 +1,20 @@
 <?php
 /**
- * Copyright (c) 2018. Gabriel A. Tolentino
- * Henchman Products PTY.
+ * Henchman Products PTY.  Standard Copyright and Disclaimer Notice:
+ *
+ * Copyright ©2018. Henchman Products PTY.  All Rights Reserved. Permission to use, copy, modify, and distribute this
+ * software and its documentation for educational, research, and not-for-profit purposes, without fee and without a signed
+ * licensing agreement, is hereby granted, provided that the above copyright notice, this paragraph and the following two
+ * paragraphs appear in all copies, modifications, and distributions.
+ *
+ * IN NO EVENT SHALL HENCHMAN  BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
+ * CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
+ * DOCUMENTATION, EVEN IF REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * HENCHMAN SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE AND
+ * ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED "AS IS".HENCHMAN
+ *  HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
 
@@ -306,4 +319,76 @@ public  function updateKitStatus($custid, $kitid, $status ){
 
     }
 
+
+    public  function isKitReserved($custid, $kitid){
+
+        $sql = "SELECT *\n" .
+            "FROM\n" .
+            "reservations\n" .
+            "WHERE\n" .
+            "reservations.custid = $custid\n" .
+            "AND reservations.kitid = $kitid";
+
+        $reservations = null;
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $reservations = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if($reservations) {
+                return true;
+                $reservations = null;
+                $db = null;
+            } else {
+
+                return false;
+            }
+
+
+        }catch(PDOException $e){
+            echo '{"error": {"Message": '.$e->getMessage().'}';
+
+        }
+
+    }
+
+    public  function isToolReserved($custid, $toolid){
+
+        $sql = "SELECT *\n" .
+            "FROM\n" .
+            "reservations\n" .
+            "WHERE\n" .
+            "reservations.custid = $custid\n" .
+            "AND reservations.toolid = $toolid";
+
+        $reservations = null;
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $reservations = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if($reservations) {
+                return true;
+                $reservations = null;
+                $db = null;
+            } else {
+
+                return false;
+            }
+
+
+        }catch(PDOException $e){
+            echo '{"error": {"Message": '.$e->getMessage().'}';
+
+        }
+
+    }
+
 }
+
