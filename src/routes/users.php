@@ -36,29 +36,36 @@ $app->get('/api/user/login', function(Request $request, Response $response) {
 
     $username = $request->getParam('username');
     $password = $request->getParam('password');
-    // Select statement
+    // Select statement\
 
-    $sql =  "SELECT DISTINCT\n".
-            "employees.id,\n".
+    $sql =  "SELECT\n".
+            "users.active,\n".
+            "users.auditrak,\n".
+            "users.role,\n".
+            "users.`level`,\n".
+            "users.custid,\n".
+            "users.userid,\n".
+            "employees.custid,\n".
             "employees.firstname,\n".
             "employees.lastname,\n".
             "employees.username,\n".
             "employees.password,\n".
             "employees.email,\n".
             "employees.photo,\n".
-            "users.custid,\n".
-            "users.active,\n".
-            "users.auditrak,\n".
-            "users.role,\n".
-            "users.level,\n".
-            "users.userid\n".
+            "employees.mobilenumber,\n".
+            "customers.`name`,\n".
+            "customers.contactperson,\n".
+            "customers.email,\n".
+            "customers.address\n".
             "FROM\n".
             "users\n".
             "LEFT JOIN employees ON employees.id = users.userid\n".
+            "LEFT JOIN customers ON customers.id = employees.custid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
             "users.active = 1 AND\n".
             "employees.password = '". md5($password). "'";
+
 
       // Check username
       if (strpos($username,'@')) {
