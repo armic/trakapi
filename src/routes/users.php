@@ -32,7 +32,7 @@ use \Slim\Http\Response as Response;
 
 
 // Login
-$app->get('/api/user/login/', function(Request $request, Response $response) {
+$app->get('/api/user/login', function(Request $request, Response $response) {
 
     $username = $request->getParam('username');
     $password = $request->getParam('password');
@@ -68,6 +68,8 @@ $app->get('/api/user/login/', function(Request $request, Response $response) {
 
       }
 
+      echo $sql;
+
     $user = null;
 
     try{
@@ -76,6 +78,9 @@ $app->get('/api/user/login/', function(Request $request, Response $response) {
         $db = $db->connect();
         $stmt = $db->query($sql);
         $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':password', $password);
 
         if($user) {
             echo  '{"success":' . json_encode($user).'}';
