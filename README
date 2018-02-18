@@ -84,7 +84,7 @@ Log User
 Returns json data about user login.
 
 URL
-/user/{username}/{password}
+/user/login
 
 Method:
 GET
@@ -92,11 +92,11 @@ GET
 URL Params
 Required:
 
+
+Data Params
 username=[string]
 password=[string]
 
-Data Params
-None
 
 Success Response:
 
@@ -115,7 +115,7 @@ Content: { error : "You are unauthorized to make this request." }
 
 Sample Call:
 
-javascript $.ajax({ url: "/user/login/alisdair/password", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
+javascript $.ajax({ url: "/user/login", dataType: "json", type : "GET", success : function(r) { console.log(r); } });
 
 
 
