@@ -32,10 +32,10 @@ use \Slim\Http\Response as Response;
 
 
 // Login
-$app->get('/api/user/login/{username}/{password}', function(Request $request, Response $response) {
+$app->get('/api/user/login/', function(Request $request, Response $response) {
 
-    $username = $request->getAttribute('username');
-    $password = $request->getAttribute('password');
+    $username = $request->getParam('username');
+    $password = $request->getParam('password');
     // Select statement
 
     $sql =  "SELECT DISTINCT\n".
