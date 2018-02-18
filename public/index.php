@@ -55,7 +55,8 @@ $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "users" => [
         "root" => " ",
         "somebody" => "passw0rd",
-        "gannet" => "k43tr4k"
+        "gannet" => "k43tr4k",
+        "techugo" => "namrata"
     ]
 ]));
 

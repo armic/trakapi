@@ -68,7 +68,6 @@ $app->get('/api/user/login', function(Request $request, Response $response) {
 
       }
 
-      echo $sql;
 
     $user = null;
 
