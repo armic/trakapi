@@ -24,6 +24,7 @@ use \Slim\Http\Response as Response;
 //Issuance
 
 // {flag can be 1 for KIT or 0 for TOOL}
+
    $app->post('/api/transaction/issue/{custid}/{userid}/{flag}', function(Request $request, Response $response) {
 //$app->post('/api/transaction/issue/{custid}', function(Request $request, Response $response) {
 
@@ -107,6 +108,7 @@ use \Slim\Http\Response as Response;
 //Return
 
 // {flag can be 1 for KIT or 0 for TOOL}
+
 $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request $request, Response $response) {
 //$app->post('/api/transaction/issue/{custid}', function(Request $request, Response $response) {
 
@@ -132,7 +134,6 @@ $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request 
         }else{
             $sql = $sql. " AND kittoolid = $kittoolid";
         }
-echo $sql;
 
         try {
             // Get DB object
@@ -409,47 +410,6 @@ $app->get('/api/transaction/list/user/returned/{custid}/{userid}', function(Requ
 
     }catch(PDOException $e){
         echo '{"error": {"Message": '.$e->getMessage().'}';
-
-    }
-});
-
-// Add KIt reservation
-
-$app->post('/api/transaction/reservation/kit/add/{custid}/{userid}/{kitid}', function(Request $request, Response $response) {
-
-    $custid = $request->getAttribute('custid');
-    $userid = $request->getAttribute('userid');
-    $kitid = $request->getAttribute('kitid');
-    $reservationdate  = date("Y-m-d");
-    $reservationtime = date("h:i:sa");
-    $flag = 1;
-
-    $reservation = null;
-
-    // Select statement
-    // $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :
-    $sql = "INSERT INTO reservations (reservationdate, reservationtime, custid, userid,kitid,flag) VALUES (:reservationdate, :reservationtime, :custid, :userid,:kitid,:flag)";
-
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-
-        $stmt->bindParam(':custid', $custid);
-        $stmt->bindParam(':userid', $userid);
-        $stmt->bindParam(':kitid', $kitid);
-        $stmt->bindParam(':reservationdate', $reservationdate);
-        $stmt->bindParam(':reservationtime', $reservationtime);
-        $stmt->bindParam(':flag', $flag);
-
-
-        $stmt->execute();
-        $db = null;
-        echo '{"notice": {"Message": "KIT Reservation Added"}';
-
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
 
     }
 });
