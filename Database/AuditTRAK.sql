@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100113
 File Encoding         : 65001
 
-Date: 2018-02-19 10:19:28
+Date: 2018-02-19 10:24:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -31,6 +31,7 @@ CREATE TABLE `audittraktransactions` (
   `datereturned` date DEFAULT NULL,
   `kittoolid` int(11) DEFAULT NULL,
   `workorder` varchar(25) DEFAULT NULL,
+  `flag` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='AuditTRAK transaction storage';
 
