@@ -594,7 +594,7 @@ $app->get('/api/transaction/kits/list/{custid}', function(Request $request, Resp
         $kits = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         if($kits) {
-            echo  '{"Available Tools": '. json_encode($kits). '}';
+            echo  '{"Available kits": '. json_encode($kits). '}';
             $tools = null;
             $db = null;
         } else {
