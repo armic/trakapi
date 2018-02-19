@@ -496,6 +496,118 @@ $app->post('/api/transaction/reservation/tool/add/{custid}/{userid}/{toolid}', f
     }
 });
 
+// Load tool list for user selection. Tools that are issued or reserved will not be shown from the list
+
+$app->get('/api/transaction/tools/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+
+    $tools = null;
+
+    // Select statement
+
+     $sql=  "SELECT\n".
+            "kittools.toolid,\n".
+            "tools.description AS ToolName,\n".
+            "tools.serialno,\n".
+            "tools.categoryid,\n".
+            "tools.toolimage,\n".
+            "kittools.`status`,\n".
+            "kittools.qrcode,\n".
+            "kittools.reserved,\n".
+            "kittools.custid,\n".
+            "kittools.kitid,\n".
+            "kits.description AS kitdescription,\n".
+            "kits.lockerid,\n".
+            "toolcategories.description AS ToolCategory\n".
+            "FROM\n".
+            "kittools\n".
+            "LEFT JOIN tools ON tools.id = kittools.toolid\n".
+            "LEFT JOIN kits ON kits.id = kittools.kitid\n".
+            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
+            "WHERE\n".
+            "kittools.`status` IS NOT NULL AND\n".
+            "kittools.`status` <> 1 AND\n".
+            "kittools.reserved <> 1 AND\n".
+            "kittools.custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $tools = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($tools) {
+            echo  '{"Available Tools": '. json_encode($tools). '}';
+            $tools = null;
+            $db = null;
+        } else {
+            echo '{"error":"No tools found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+// Load kit list for user selection. Kits that are issued or reserved will not be shown from the list
+
+$app->get('/api/transaction/kits/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+
+    $kits = null;
+
+    // Select statement
+
+    $sql=  "SELECT\n".
+        "lockers.locationid,\n".
+        "locations.description AS kitlocation,\n".
+        "kits.id,\n".
+        "kits.lockerid,\n".
+        "kits.description AS kitdescription,\n".
+        "kits.custid,\n".
+        "kits.reserved,\n".
+        "kits.qrcode,\n".
+        "kits.kitlocation,\n".
+        "kits.`status`,\n".
+        "lockers.description AS lockerdescription,\n".
+        "lockers.`code`\n".
+        "FROM\n".
+        "kits\n".
+        "INNER JOIN lockers ON lockers.id = kits.lockerid\n".
+        "INNER JOIN locations ON locations.id = lockers.locationid\n".
+        "WHERE\n".
+        "kits.custid = $custid AND\n".
+        "kits.reserved <> 1 AND\n".
+        "kits.`status` <> 1 AND\n".
+        "kits.`status` IS NOT NULL";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $kits = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($kits) {
+            echo  '{"Available Tools": '. json_encode($kits). '}';
+            $tools = null;
+            $db = null;
+        } else {
+            echo '{"error":"No kits found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
 
 
 
