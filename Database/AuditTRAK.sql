@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100113
 File Encoding         : 65001
 
-Date: 2018-02-19 07:34:16
+Date: 2018-02-19 10:19:28
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -93,6 +93,8 @@ CREATE TABLE `kits` (
   `custid` int(11) DEFAULT NULL,
   `reserved` int(1) DEFAULT NULL,
   `qrcode` varchar(255) DEFAULT NULL,
+  `kitlocation` int(11) DEFAULT NULL,
+  `status` int(1) DEFAULT NULL COMMENT 'Issued 1 Available 0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Kit Table';
 
