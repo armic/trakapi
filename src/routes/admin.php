@@ -958,6 +958,147 @@ $app->put('/api/admin/locker/enable/{custid}/{lockerid}', function(Request $requ
 });
 
 
+//KITS
+
+// View kit List
+
+$app->get('/api/admin/kits/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT\n".
+            "kits.id,\n".
+            "kits.lockerid,\n".
+            "kits.description,\n".
+            "kits.custid,\n".
+            "kits.reserved,\n".
+            "kits.qrcode,\n".
+            "kits.kitlocation,\n".
+            "kits.`status`,\n".
+            "lockers.description AS lockername,\n".
+            "locations.description AS locationname\n".
+            "FROM\n".
+            "kits\n".
+            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n".
+            "LEFT JOIN locations ON locations.id = lockers.locationid\n".
+            "WHERE\n".
+            "kits.custid = $custid";
+
+
+
+    $kits = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($kits) {
+            echo  '{"lockers": '. json_encode($kits). '}';
+            $kits = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+//Update kit
+
+$app->put('/api/admin/kit/update/{custid}/{kitid}', function(Request $request, Response $response) {
+
+    $kitid = $request->getAttribute('kitid');
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+    $qrcode = $request->getParam('qrcode');
+    $lockerid = $request->getParam('lockerid');
+
+
+
+    $sql = "UPDATE kits SET
+                   description = :description,
+                   qrcode = :qrcode,
+                   lockerid = :lockerid
+             WHERE id = $kitid AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        // $stmt->bindParam(':userid', $userid);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':qrcode', $qrcode);
+        $stmt->bindParam(':lockerid', $lockerid);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Kit updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// Add KIT
+
+$app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $description = $request-> getParam('description');
+    $qrcode = $request->getParam('qrcode');
+    $lockerid = $request->getParam('lockerid');
+
+
+
+
+    $sql = "INSERT INTO kits (custid, description, lockerid,qrcode, reserved,status) VALUES 
+            (:custid, :description,:lockerid, :qrcode, 0, 0)";
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':qrcode', $qrcode);
+        $stmt->bindParam(':lockerid', $lockerid);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Kit Added"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+
+
+});
+
+
+
+
+
+
 
 
 
