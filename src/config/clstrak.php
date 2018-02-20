@@ -438,5 +438,89 @@ public  function updateKitStatus($custid, $kitid, $status ){
 
     }
 
+
+    public  function isTailTransaction($custid, $number){
+
+        $sql = "SELECT *\n" .
+            "FROM\n" .
+            "auditraktransactions\n" .
+            "WHERE\n" .
+            "tailid = $number\n" .
+            "AND custid = $custid";
+
+        $tailtransactions = null;
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $tailtransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if($tailtransactions) {
+                return true;
+                $tailtransactions = null;
+                $db = null;
+            } else {
+
+                return false;
+            }
+
+
+        }catch(PDOException $e){
+            echo '{"error": {"Message": '.$e->getMessage().'}';
+
+        }
+
+    }
+
+    public  function DisableTail($custid, $number){
+
+        //$status 0 - IN 1 - OUT
+
+        $sql =  "UPDATE tails SET  active = 0  WHERE custid = $custid AND number = $number";
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+
+            $stmt->execute();
+            $db = null;
+            // echo '{"notice": {"text": "Tail disabled"}';
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+
+    }
+
+    public  function EnableTail($custid, $number){
+
+        //$status 0 - IN 1 - OUT
+
+        $sql =  "UPDATE tails SET  active = 1  WHERE custid = $custid AND number = $number";
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+
+            $stmt->execute();
+            $db = null;
+            // echo '{"notice": {"text": "Tail enabled"}';
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+
+    }
+
 }
 
