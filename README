@@ -22,6 +22,8 @@ admin.php
 10. added // View locker list $app->get('/api/admin/locker/list/{custid}', function(Request $request, Response $response)
 11. added // Update locker $app->put('/api/admin/locker/update/{custid}/{lockerid}', function(Request $request, Response $response)
 12. added // Add locker $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response $response)
+13. added // Disable specific  locker $app->put('/api/admin/locker/disable/{custid}/{lockerid}', function(Request $request, Response $response)
+14. added // enable specific  locker $app->put('/api/admin/locker/enable/{custid}/{lockerid}', function(Request $request, Response $response)
 
 
 transaction.php
