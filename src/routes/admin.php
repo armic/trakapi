@@ -269,7 +269,7 @@ $app->post('/api/admin/employee/add/{custid}', function(Request $request, Respon
 
 // Get tail list
 
-$app->get('/api/admin/tails/{custid}', function(Request $request, Response $response) {
+$app->get('/api/admin/tails/list/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
     // Select statement
@@ -279,7 +279,48 @@ $app->get('/api/admin/tails/{custid}', function(Request $request, Response $resp
         "tails.number,\n".
         "tails.description\n".
         "FROM tails\n".
-        "WHERE custid = $custid";
+        "WHERE custid = $custid AND\n".
+        "active= 1";
+    $tails = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($tails) {
+            echo  '{"Tails": '. json_encode($tails). '}';
+            $tails = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+
+// Get specific tail
+
+$app->get('/api/admin/tail/view/{custid}/{number}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $number = $request->getAttribute('number');
+    // Select statement
+
+    $sql = "SELECT DISTINCT\n".
+        "tails.id,\n".
+        "tails.number,\n".
+        "tails.description\n".
+        "FROM tails\n".
+        "WHERE custid = $custid AND\n".
+        "number = $number";
     $tails = null;
 
     try{
@@ -384,6 +425,67 @@ $app->put('/api/admin/tail/update/{number}/{custid}', function(Request $request,
 
 
 });
+
+$app->put('/api/admin/tail/disable/{number}/{custid}', function(Request $request, Response $response) {
+
+    $number = $request->getAttribute('number');
+    $custid = $request->getAttribute('custid');
+
+
+
+    $sql = "UPDATE tails SET
+                    active = 0
+             WHERE number = '$number' AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':description', $description);
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Tail disabled"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+$app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request, Response $response) {
+
+    $number = $request->getAttribute('number');
+    $custid = $request->getAttribute('custid');
+
+
+
+    $sql = "UPDATE tails SET
+                    active = 1
+             WHERE number = '$number' AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':description', $description);
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Tail enabled"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
 
 /**
  * End Tail  Paths
