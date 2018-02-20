@@ -497,7 +497,9 @@ $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request,
  */
 
 
-//users
+/**
+ * User  Paths
+ */
 
 
 // Get user list
@@ -645,4 +647,78 @@ $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request,
 
 
 });
+
+/**
+ * User  Paths
+ */
+
+
+/**
+ * reservation  Paths
+ */
+
+// Reservation List
+
+
+$app->get('/api/admin/reservation/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT * FROM reservation WHERE custid = $custid ORDER BY reservationdate DESC";
+
+    $sql =  "SELECT\n".
+            "reservations.custid,\n".
+            "reservations.reservationdate,\n".
+            "reservations.reservationtime,\n".
+            "reservations.userid,\n".
+            "reservations.kitid,\n".
+            "reservations.toolid,\n".
+            "reservations.flag,\n".
+            "customers.`name`,\n".
+            "employees.firstname,\n".
+            "employees.lastname,\n".
+            "kits.description AS kitname,\n".
+            "lockers.description AS lockername,\n".
+            "tools.stockcode,\n".
+            "tools.descriptionvAS toolname\n".
+            "FROM\n".
+            "reservations\n".
+            "LEFT JOIN customers ON customers.id = reservations.custid\n".
+            "LEFT JOIN employees ON employees.id = reservations.userid\n".
+            "LEFT JOIN kits ON kits.id = reservations.kitid\n".
+            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n".
+            "LEFT JOIN kittools ON kittools.id = reservations.toolid\n".
+            "LEFT JOIN tools ON tools.id = kittools.toolid\n".
+            "WHERE\n".
+            "reservations.custid = $custid\n".
+            "ORDER BY\n".
+            "reservations.reservationdate DESC,\n".
+            "reservations.reservationtime DESC";
+
+    $reservation = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $users = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($reservation) {
+            echo  '{"reservations": '. json_encode($reservation). '}';
+            $users = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+
 
