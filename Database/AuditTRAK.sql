@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100113
 File Encoding         : 65001
 
-Date: 2018-02-19 10:24:50
+Date: 2018-02-20 09:25:08
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,7 +25,7 @@ CREATE TABLE `audittraktransactions` (
   `type` int(11) DEFAULT NULL COMMENT 'Transaction Type 0 - Issue  1 - Return',
   `datetimeissued` date DEFAULT NULL,
   `userid` int(11) DEFAULT NULL,
-  `tailid` int(11) DEFAULT NULL,
+  `tailid` varchar(20) DEFAULT NULL,
   `lockerid` int(11) DEFAULT NULL,
   `kitid` int(11) DEFAULT NULL,
   `datereturned` date DEFAULT NULL,
@@ -183,6 +183,7 @@ CREATE TABLE `tails` (
   `custid` int(11) DEFAULT NULL,
   `number` int(11) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `active` int(1) DEFAULT '1' COMMENT '1-Yes 0-No',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Aircraft/Tail Number table';
 
