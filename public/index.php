@@ -76,8 +76,6 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 
 // User
 require '../src/routes/users.php';
-require '../src/routes/employees.php';
-require '../src/routes/tails.php';
 require '../src/routes/transactions.php';
 require '../src/routes/admin.php';
 $app->run();
