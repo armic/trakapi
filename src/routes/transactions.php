@@ -703,6 +703,46 @@ $app->get('/api/transaction/kits/list/{custid}', function(Request $request, Resp
     }
 });
 
+// Load Tail list for user selection. Active = 0 will not be shown
+
+$app->get('/api/transaction/tails/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+
+    $tails = null;
+
+    // Select statement
+    $sql = "SELECT DISTINCT\n".
+        "tails.id,\n".
+        "tails.number,\n".
+        "tails.description\n".
+        "FROM tails\n".
+        "WHERE custid = $custid AND \n".
+        "active = 1";
+
+
+     try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+         $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($tails) {
+            echo  '{"Active Tails": '. json_encode($tails). '}';
+            $tools = null;
+            $db = null;
+        } else {
+            echo '{"error":"No tails found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
 
 
 
