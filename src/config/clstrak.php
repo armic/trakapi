@@ -295,6 +295,54 @@ public  function updateToolStatus($custid, $toolid,$status){
         }
     }
 
+
+    public  function updateToolReservedStatus($custid, $toolid,$status){
+
+        $sql =  "UPDATE kittools SET  reserved = $status  WHERE id = $toolid AND custid = $custid";
+
+        //$status 0 - IN 1 - OUT
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+
+            $stmt->execute();
+            $db = null;
+            // echo '{"notice": {"text": "Tool reservation status updated"}';
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+    }
+
+
+    public  function updateKitReservedStatus($custid, $kitid,$status){
+
+        $sql =  "UPDATE kits SET  reserved = $status  WHERE id = $kitid AND custid = $custid";
+
+        //$status 0 - Available 1 - Reserved
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+
+            $stmt->execute();
+            $db = null;
+            // echo '{"notice": {"text": "Kit reservation  status updated"}';
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+    }
+
 public  function updateKitStatus($custid, $kitid, $status ){
 
     //$status 0 - IN 1 - OUT

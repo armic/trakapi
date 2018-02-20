@@ -29,8 +29,6 @@ use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 
 
-
-
 // Login
 $app->get('/api/user/login', function(Request $request, Response $response) {
 

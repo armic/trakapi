@@ -1,6 +1,7 @@
 {
     "require": {
         "slim/slim": "^3.0",
-        "tuupola/slim-basic-auth": "^2.2"
+        "tuupola/slim-basic-auth": "^2.2",
+        "zircote/swagger-php": "^2.0"
     }
 }

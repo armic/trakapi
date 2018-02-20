@@ -17,13 +17,17 @@
  *  HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
+
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 // use \Psr\Http\Message\ServerRequestInterface as Request;
 //use \Psr\Http\Message\ResponseInterface as Response;
-require '../vendor/autoload.php';
+
+require("../vendor/autoload.php");
 require '../src/config/db.php';
 require '../src/config/clstrak.php';
+
+
 
 define("ISSUE", 1);
 define("IRETURN",0);
@@ -36,6 +40,8 @@ define("REVOKED",0);
 define("AUDITTRAK",1);
 define("KIT",1);
 define("TOOL",0);
+
+
 
 
 $app = new \Slim\App;
@@ -73,4 +79,5 @@ require '../src/routes/users.php';
 require '../src/routes/employees.php';
 require '../src/routes/tails.php';
 require '../src/routes/transactions.php';
+require '../src/routes/admin.php';
 $app->run();
