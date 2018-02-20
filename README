@@ -17,6 +17,7 @@ admin.php
 5. added // Activate specific Tail $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request, Response $response)
 6. added // Add new tail $app->post('/api/admin/tail/add/{custid}', function(Request $request, Response $response)
 7. added // Update user record $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request, Response $response)
+8. added // Reservation List app->get('/api/admin/reservation/list/{custid}', function(Request $request, Response $response)
 
 clstrak.php
 
