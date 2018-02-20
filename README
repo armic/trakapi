@@ -18,6 +18,7 @@ admin.php
 6. added // Add new tail $app->post('/api/admin/tail/add/{custid}', function(Request $request, Response $response)
 7. added // Update user record $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request, Response $response)
 8. added // Reservation List app->get('/api/admin/reservation/list/{custid}', function(Request $request, Response $response)
+9. added // Log List $app->get('/api/admin/log/list/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
