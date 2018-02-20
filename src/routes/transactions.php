@@ -743,6 +743,44 @@ $app->get('/api/transaction/tails/list/{custid}', function(Request $request, Res
     }
 });
 
+// Add log
+
+$app->post('/api/log/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $description = $request->getParam('description');
+    $logdate = date("Y-m-d h:i:sa");
+
+
+    $reservation = null;
+
+    // Select statement
+    $sql = "INSERT INTO log (description, logdate, custid) VALUES (:description, :logdate, :custid)";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':logdate', $logdate);
+
+
+        $stmt->execute();
+        $db = null;
+
+
+        echo '{"notice": {"Message": "Log entry Added"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+});
+
+
 
 
 
