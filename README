@@ -21,3 +21,18 @@ admin.php
 clstrak.php
 
 1. update public function isUserExist($custid, $userid) - added filter users.auditrak =1
+
+Database
+
+1. added log table - to log system wide operations of Auditrak
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
+  `logdate` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `custid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+2. Update Database Model
+3. Update Database Dump
+
