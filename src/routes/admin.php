@@ -891,6 +891,73 @@ $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response
 
 });
 
+// Disable specific  locker
+
+$app->put('/api/admin/locker/disable/{custid}/{lockerid}', function(Request $request, Response $response) {
+
+    $lockerid = $request->getAttribute('lockerid');
+    $custid = $request->getAttribute('custid');
+
+
+
+    $sql = "UPDATE lockers SET
+                   active = 0
+             WHERE id = $lockerid AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "locker disabled"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// enable specific  locker
+
+$app->put('/api/admin/locker/enable/{custid}/{lockerid}', function(Request $request, Response $response) {
+
+    $lockerid = $request->getAttribute('lockerid');
+    $custid = $request->getAttribute('custid');
+
+
+
+    $sql = "UPDATE lockers SET
+                   active = 1
+             WHERE id = $lockerid AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "locker enabled"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+
 
 
 
