@@ -19,6 +19,9 @@ admin.php
 7. added // Update user record $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request, Response $response)
 8. added // Reservation List app->get('/api/admin/reservation/list/{custid}', function(Request $request, Response $response)
 9. added // Log List $app->get('/api/admin/log/list/{custid}', function(Request $request, Response $response)
+10. added // View locker list $app->get('/api/admin/locker/list/{custid}', function(Request $request, Response $response)
+11. added // Update locker $app->put('/api/admin/locker/update/{custid}/{lockerid}', function(Request $request, Response $response)
+12. added // Add locker $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
@@ -42,4 +45,15 @@ CREATE TABLE `log` (
 
 2. Update Database Model
 3. Update Database Dump
+
+2. Added active field in locker table
+   CREATE TABLE `lockers` (
+     `id` int(11) NOT NULL AUTO_INCREMENT,
+     `custid` int(11) DEFAULT NULL,
+     `description` varchar(255) DEFAULT NULL,
+     `code` varchar(200) DEFAULT NULL COMMENT 'Code to unlock locker via wifi or bluetooth',
+     `locationid` int(11) DEFAULT NULL COMMENT 'Location ID',
+     `active` int(1) DEFAULT NULL COMMENT '0 - inactive 1- active',
+     PRIMARY KEY (`id`)
+   ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Locker Table';
 
