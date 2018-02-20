@@ -13,6 +13,7 @@ admin.php
 3. added Update tail $app->put('/api/admin/tail/update/{number}/{custid}', function(Request $request, Response $response)
 4. added // Deactivate specific Tail $app->put('/api/admin/tail/disable/{number}/{custid}', function(Request $request, Response $response)
 5. added // Activate specific Tail $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request, Response $response)
+6. added Add new tail $app->post('/api/admin/tail/add/{custid}', function(Request $request, Response $response)
 
 clstrak.php
 
