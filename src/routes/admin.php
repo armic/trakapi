@@ -757,4 +757,143 @@ $app->get('/api/admin/log/list/{custid}', function(Request $request, Response $r
 });
 
 
+// Lockers
+
+// View locker list
+
+$app->get('/api/admin/locker/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT\n".
+            "lockers.id,\n".
+            "lockers.custid,\n".
+            "lockers.description AS lockername,\n".
+            "lockers.`code`,\n".
+            "lockers.locationid,\n".
+            "locations.description AS locationname\n".
+            "FROM\n".
+            "lockers\n".
+            "LEFT JOIN locations ON locations.id = lockers.locationid\n".
+            "WHERE\n".
+            "lockers.custid = $custid";
+
+
+
+    $lockers = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($lockers) {
+            echo  '{"lockers": '. json_encode($lockers). '}';
+            $logs = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+// Update locker
+
+$app->put('/api/admin/locker/update/{custid}/{lockerid}', function(Request $request, Response $response) {
+
+    $lockerid = $request->getAttribute('lockerid');
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+    $code = $request->getParam('code');
+    $locationid = $request->getParam('locationid');
+
+
+
+    $sql = "UPDATE lockers SET
+                   description = :description,
+                   code = :code,
+                   locationid = :locationid
+             WHERE id = $lockerid AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        // $stmt->bindParam(':userid', $userid);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':code', $code);
+        $stmt->bindParam(':locationid', $locationid);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "locker updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// Add locker
+
+$app->post('/api/admin/locker/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $description = $request-> getParam('description');
+    $code = $request->getParam('code');
+    $locationid = $request->getParam('locationid');
+    $active = $request->getParam('active');
+
+    $active = 1;
+
+
+
+        $sql = "INSERT INTO lockers (custid, description, code,locationid, active) VALUES 
+            (:custid, :description,:code, :locationid, :active)";
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindParam(':custid', $custid);
+            $stmt->bindParam(':description', $description);
+            $stmt->bindParam(':code', $code);
+            $stmt->bindParam(':locationid', $locationid);
+            $stmt->bindParam(':locationid', $active);
+
+
+            $stmt->execute();
+            $db = null;
+            echo '{"notice": {"text": "locker Added"}';
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+
+
+
+
+});
+
+
+
+
+
+
 
