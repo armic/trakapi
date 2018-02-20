@@ -279,8 +279,8 @@ $app->get('/api/admin/tails/list/{custid}', function(Request $request, Response 
         "tails.number,\n".
         "tails.description\n".
         "FROM tails\n".
-        "WHERE custid = $custid AND\n".
-        "active= 1";
+        "WHERE custid = $custid";
+
     $tails = null;
 
     try{
@@ -426,6 +426,9 @@ $app->put('/api/admin/tail/update/{number}/{custid}', function(Request $request,
 
 });
 
+
+// Deactivate specific Tail
+
 $app->put('/api/admin/tail/disable/{number}/{custid}', function(Request $request, Response $response) {
 
     $number = $request->getAttribute('number');
@@ -455,6 +458,8 @@ $app->put('/api/admin/tail/disable/{number}/{custid}', function(Request $request
 
 
 });
+
+// Activate specific Tail
 
 $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request, Response $response) {
 
@@ -492,3 +497,112 @@ $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request,
  */
 
 
+//users
+
+
+// Get user list
+
+
+$app->get('/api/admin/users/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT DISTINCT\n".
+        "employees.id,\n".
+        "employees.firstname,\n".
+        "employees.lastname,\n".
+        "employees.username,\n".
+        "employees.`password`,\n".
+        "employees.email,\n".
+        "employees.photo,\n".
+        "users.custid,\n".
+        "users.active,\n".
+        "users.auditrak,\n".
+        "users.role,\n".
+        "users.userid\n".
+        "FROM\n".
+        "users\n".
+        "LEFT JOIN employees ON employees.id = users.userid\n".
+        "WHERE\n".
+        "users.auditrak = 1 AND\n".
+        "users.custid = $custid";
+
+    $users = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $users = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($users) {
+            echo  '{"users": '. json_encode($users). '}';
+            $users = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+// Get specific user
+
+
+$app->get('/api/admin/user/{userid}', function(Request $request, Response $response) {
+
+    $userid = $request->getAttribute('userid');
+    // Select statement
+
+    $sql = "SELECT DISTINCT\n".
+        "employees.id,\n".
+        "employees.firstname,\n".
+        "employees.lastname,\n".
+        "employees.username,\n".
+        "employees.`password`,\n".
+        "employees.email,\n".
+        "employees.photo,\n".
+        "users.id,\n".
+        "users.custid,\n".
+        "users.active,\n".
+        "users.auditrak,\n".
+        "users.role,\n".
+        "users.userid\n".
+        "FROM\n".
+        "users\n".
+        "LEFT JOIN employees ON employees.id = users.userid\n".
+        "WHERE\n".
+        "users.userid = $userid AND\n".
+        "users.auditrak =1";
+
+    echo $sql;
+
+    $user = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($user) {
+            echo  '{"user": '. json_encode($user). '}';
+            $users = null;
+            $db = null;
+        } else {
+            echo '{"error":"User not found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
