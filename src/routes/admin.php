@@ -581,7 +581,6 @@ $app->get('/api/admin/user/{userid}', function(Request $request, Response $respo
         "users.userid = $userid AND\n".
         "users.auditrak =1";
 
-    echo $sql;
 
     $user = null;
 
