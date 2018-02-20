@@ -19,6 +19,11 @@ admin.php
 7. added // Update user record $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request, Response $response)
 8. added // Reservation List app->get('/api/admin/reservation/list/{custid}', function(Request $request, Response $response)
 
+
+transaction.php
+
+1. added // Add log $app->post('/api/log/add/{custid}', function(Request $request, Response $response)
+
 clstrak.php
 
 1. update public function isUserExist($custid, $userid) - added filter users.auditrak =1
