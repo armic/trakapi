@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100113
 File Encoding         : 65001
 
-Date: 2018-02-20 09:25:08
+Date: 2018-02-21 06:30:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -152,6 +152,22 @@ CREATE TABLE `lockers` (
 
 -- ----------------------------
 -- Records of lockers
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for log
+-- ----------------------------
+DROP TABLE IF EXISTS `log`;
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
+  `logdate` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `custid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of log
 -- ----------------------------
 
 -- ----------------------------
