@@ -605,3 +605,44 @@ $app->get('/api/admin/user/{userid}', function(Request $request, Response $respo
 
     }
 });
+
+// Update user record
+
+$app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request, Response $response) {
+
+    $userid = $request->getAttribute('userid');
+    $custid = $request->getAttribute('custid');
+
+    $role = $request->getParam('role');
+    $level = $request->getParam('level');
+
+
+
+    $sql = "UPDATE users SET
+                   role = :role,
+                   level = :level
+             WHERE userid = $userid AND custid = $custid AND auditrak= 1";
+    echo $sql;
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        // $stmt->bindParam(':userid', $userid);
+        $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':level', $level);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "User updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
