@@ -127,6 +127,7 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
             "LEFT JOIN employees ON employees.id = users.userid\n".
             "WHERE\n".
             "users.auditrak = 1 AND\n".
+            "users.active = 1 AND\n".
             "users.custid = $custid";
 
     $users = null;
@@ -154,60 +155,7 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
 });
 
 
-// Get specific user
 
-
-$app->get('/api/user/{userid}', function(Request $request, Response $response) {
-
-    $userid = $request->getAttribute('userid');
-    // Select statement
-
-    $sql = "SELECT DISTINCT\n".
-        "employees.id,\n".
-        "employees.firstname,\n".
-        "employees.lastname,\n".
-        "employees.username,\n".
-        "employees.`password`,\n".
-        "employees.email,\n".
-        "employees.photo,\n".
-        "users.id,\n".
-        "users.custid,\n".
-        "users.active,\n".
-        "users.auditrak,\n".
-        "users.role,\n".
-        "users.userid\n".
-        "FROM\n".
-        "users\n".
-        "LEFT JOIN employees ON employees.id = users.userid\n".
-        "WHERE\n".
-        "users.userid = $userid AND\n".
-        "users.auditrak =1";
-
-      echo $sql;
-
-    $user = null;
-
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-        $stmt = $db->query($sql);
-        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-        if($user) {
-            echo  '{"user": '. json_encode($user). '}';
-            $users = null;
-            $db = null;
-        } else {
-            echo '{"error":"User not found.")';
-        }
-
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
-    }
-});
 
 // Grant user access to AuditTRAK
 
@@ -340,45 +288,6 @@ $app->post('/api/user/revoke/{userid}/{custid}', function(Request $request, Resp
         }
     }
 
-
-
-});
-// Update user record
-
-$app->put('/api/user/update/{userid}/{custid}', function(Request $request, Response $response) {
-
-    $userid = $request->getAttribute('userid');
-    $custid = $request->getAttribute('custid');
-
-    $role = $request->getParam('role');
-    $level = $request->getParam('level');
-
-
-
-    $sql = "UPDATE users SET
-                   role = :role,
-                   level = :level
-             WHERE userid = $userid AND custid = $custid AND auditrak= 1";
-   echo $sql;
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-
-        // $stmt->bindParam(':userid', $userid);
-        $stmt->bindParam(':role', $role);
-        $stmt->bindParam(':level', $level);
-
-
-        $stmt->execute();
-        $db = null;
-        echo '{"notice": {"text": "User updated"}';
-
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
-
-    }
 
 
 });
