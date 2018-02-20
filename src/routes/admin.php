@@ -665,7 +665,6 @@ $app->get('/api/admin/reservation/list/{custid}', function(Request $request, Res
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT * FROM reservation WHERE custid = $custid ORDER BY reservationdate DESC";
 
     $sql =  "SELECT\n".
             "reservations.custid,\n".
@@ -703,11 +702,48 @@ $app->get('/api/admin/reservation/list/{custid}', function(Request $request, Res
         $db= new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
-        $users = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $reservation = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         if($reservation) {
             echo  '{"reservations": '. json_encode($reservation). '}';
-            $users = null;
+            $reservation = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+
+// Log List
+
+
+$app->get('/api/admin/log/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT * FROM log WHERE custid = $custid ORDER BY logdate DESC";
+
+
+
+    $logs = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($logs) {
+            echo  '{"logs": '. json_encode($logs). '}';
+            $logs = null;
             $db = null;
         } else {
             echo '{"error":"No records found.")';
