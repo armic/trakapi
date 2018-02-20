@@ -9,7 +9,7 @@ users.php
 admin.php
 
 1. added $app->get('/api/admin/user/{userid}', function(Request $request, Response $response)
-2. added $app->get('/api/admin/users/{custid}', function(Request $request, Response $response), this loads both revoked/granyed users
+2. added $app->get('/api/admin/users/{custid}', function(Request $request, Response $response), this loads both revoked/granted users
 3. added Update tail $app->put('/api/admin/tail/update/{number}/{custid}', function(Request $request, Response $response)
 4. added // Deactivate specific Tail $app->put('/api/admin/tail/disable/{number}/{custid}', function(Request $request, Response $response)
 5. added // Activate specific Tail $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request, Response $response)
