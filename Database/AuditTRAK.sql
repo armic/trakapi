@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100113
 File Encoding         : 65001
 
-Date: 2018-02-21 13:59:08
+Date: 2018-02-21 14:27:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,22 +23,23 @@ CREATE TABLE `audittraktransactions` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Auto Incremented',
   `custid` int(11) DEFAULT NULL,
   `type` int(11) DEFAULT NULL COMMENT 'Transaction Type 0 - Issue  1 - Return',
-  `datetimeissued` date DEFAULT NULL,
+  `datetimeissued` datetime DEFAULT NULL,
   `userid` int(11) DEFAULT NULL,
   `tailid` varchar(20) DEFAULT NULL,
   `lockerid` int(11) DEFAULT NULL,
   `kitid` int(11) DEFAULT NULL,
-  `datereturned` date DEFAULT NULL,
+  `datereturned` datetime DEFAULT NULL,
   `kittoolid` int(11) DEFAULT NULL,
   `workorder` varchar(25) DEFAULT NULL,
   `flag` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='AuditTRAK transaction storage';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COMMENT='AuditTRAK transaction storage';
 
 -- ----------------------------
 -- Records of audittraktransactions
 -- ----------------------------
-INSERT INTO `audittraktransactions` VALUES ('1', '2', '1', '2018-02-21', '1', '1', '1', '1', null, null, '11111-232', '1');
+INSERT INTO `audittraktransactions` VALUES ('2', '2', '0', '2018-02-21 00:00:00', '1', '1', '1', '1', '2018-02-21 00:00:00', null, '11111-232', '1');
+INSERT INTO `audittraktransactions` VALUES ('3', '2', '1', '2018-02-21 00:00:00', '1', '1', '1', '1', null, null, '11111-232', '1');
 
 -- ----------------------------
 -- Table structure for customers
@@ -192,7 +193,6 @@ CREATE TABLE `reservations` (
 -- ----------------------------
 -- Records of reservations
 -- ----------------------------
-INSERT INTO `reservations` VALUES ('5', '2018-02-21', '06:47:18', '2', '1', null, '1', '0');
 
 -- ----------------------------
 -- Table structure for tails
