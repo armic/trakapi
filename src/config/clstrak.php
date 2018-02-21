@@ -38,6 +38,7 @@ class clstrak
             "users\n" .
             "WHERE\n" .
             "users.custid = $custid AND\n" .
+            "users.auditrak = 1 AND\n" .
             "users.userid = '$userid'";
 
         $user = null;

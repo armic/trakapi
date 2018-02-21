@@ -115,7 +115,7 @@ $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request 
     $custid = $request->getAttribute('custid');
     $userid = $request->getAttribute('userid');
     $flag = $request->getAttribute('flag');
-    $type = IRETURN;
+    $type = BACK;
     $datetimereturned = date("Y-m-d h:i:sa");
     $tailid = $request->getParam('tailid');
     $lockerid = $request->getParam('lockerid');
@@ -127,8 +127,9 @@ $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request 
 
     if($trk->isTransactionExist($custid,$userid,$tailid,$kitid,$kittoolid,$flag)) {
 
-        $sql = "UPDATE audittraktransactions SET type = $type, datereturned = '$datetimereturned' WHERE custid = $custid AND userid = $userid AND type = 1 AND tailid = $tailid AND lockerid = $lockerid AND  workorder = $workorder";
+        $sql = "UPDATE audittraktransactions SET type = $type, datereturned = '$datetimereturned' WHERE custid = $custid AND userid = $userid AND type = 1 AND tailid = $tailid AND lockerid = $lockerid AND  workorder = '$workorder'";
 
+        echo $sql;
         if($flag == KIT) {
             $sql = $sql. " AND kitid = $kitid";
         }else{

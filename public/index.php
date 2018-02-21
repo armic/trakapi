@@ -30,7 +30,7 @@ require '../src/config/clstrak.php';
 
 
 define("ISSUE", 1);
-define("IRETURN",0);
+define("BACK",0);
 define("ADMIN", 1);
 define("USER",0);
 define("OUT",1);
@@ -40,6 +40,8 @@ define("REVOKED",0);
 define("AUDITTRAK",1);
 define("KIT",1);
 define("TOOL",0);
+define("ACTIVE",1);
+define("INACTIVE",0);
 
 
 
