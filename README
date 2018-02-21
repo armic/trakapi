@@ -30,6 +30,9 @@ admin.php
 18. added // View kit Tool List $app->get('/api/admin/kittools/list/{custid}', function(Request $request, Response $response)
 19. added //Update kit tool $app->put('/api/admin/kittool/update/{custid}/{toolkitid}', function(Request $request, Response $response)
 20. added // Add KIT Tool $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Response $response)
+21. added // View Tool List $app->get('/api/admin/tools/list/{custid}', function(Request $request, Response $response)
+22. added //Update tool $app->put('/api/admin/tool/update/{custid}/{toolid}', function(Request $request, Response $response)
+23. added // Add Tool $app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
