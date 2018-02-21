@@ -1377,6 +1377,115 @@ $app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $
 
 });
 
+// Tool Category
+
+// View Tool Category List
+
+$app->get('/api/admin/toolcategory/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT * FROM toolcategories WHERE custid = $custid";
+
+
+    $categories = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($categories) {
+            echo  '{"tool categories": '. json_encode($categories). '}';
+            $categories = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+//Update tool categoy
+
+$app->put('/api/admin/toolcategory/update/{custid}/{id}', function(Request $request, Response $response) {
+
+    $id = $request->getAttribute('id');
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+
+
+
+    $sql = "UPDATE toolcategories SET
+                   description = :description
+             WHERE id = $id AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':description', $description);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "tool category updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// Add Tool category
+
+$app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+
+
+
+    $sql = "INSERT INTO toolcategories (custid,description) VALUES 
+            (:custid,:description)";
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':description', $description);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Tool Category  Added"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+
+
+});
+
+
 
 
 
