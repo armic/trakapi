@@ -1208,7 +1208,7 @@ $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Respons
 
 
     $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES 
-            (:kitid, :toolid,:custid, 0, 0)";
+            (:kitid, :toolid,:custid, 0, :qrcode, 0)";
     try{
         // Get DB object
         $db= new db();
