@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100113
 File Encoding         : 65001
 
-Date: 2018-02-21 06:30:41
+Date: 2018-02-21 13:59:08
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,11 +33,12 @@ CREATE TABLE `audittraktransactions` (
   `workorder` varchar(25) DEFAULT NULL,
   `flag` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='AuditTRAK transaction storage';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='AuditTRAK transaction storage';
 
 -- ----------------------------
 -- Records of audittraktransactions
 -- ----------------------------
+INSERT INTO `audittraktransactions` VALUES ('1', '2', '1', '2018-02-21', '1', '1', '1', '1', null, null, '11111-232', '1');
 
 -- ----------------------------
 -- Table structure for customers
@@ -97,11 +98,12 @@ CREATE TABLE `kits` (
   `kitlocation` int(11) DEFAULT NULL,
   `status` int(1) DEFAULT NULL COMMENT 'Issued 1 Available 0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Kit Table';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='Kit Table';
 
 -- ----------------------------
 -- Records of kits
 -- ----------------------------
+INSERT INTO `kits` VALUES ('1', '1', 'KIT1', '2', '1', '21212', '1', '1');
 
 -- ----------------------------
 -- Table structure for kittools
@@ -147,6 +149,7 @@ CREATE TABLE `lockers` (
   `description` varchar(255) DEFAULT NULL,
   `code` varchar(200) DEFAULT NULL COMMENT 'Code to unlock locker via wifi or bluetooth',
   `locationid` int(11) DEFAULT NULL COMMENT 'Location ID',
+  `active` int(1) DEFAULT NULL COMMENT '0 - inactive 1- active',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Locker Table';
 
@@ -184,11 +187,12 @@ CREATE TABLE `reservations` (
   `toolid` int(11) DEFAULT NULL,
   `flag` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of reservations
 -- ----------------------------
+INSERT INTO `reservations` VALUES ('5', '2018-02-21', '06:47:18', '2', '1', null, '1', '0');
 
 -- ----------------------------
 -- Table structure for tails
@@ -214,6 +218,7 @@ DROP TABLE IF EXISTS `toolcategories`;
 CREATE TABLE `toolcategories` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL COMMENT 'Tool Categoy Description  kabtrak,portatrak,cribtrak,audittrak',
+  `custid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Tool category table';
 
