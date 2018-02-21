@@ -1094,6 +1094,151 @@ $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $r
 
 });
 
+//Kit Tools
+// View kit Tool List
+
+$app->get('/api/admin/kittools/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT\n".
+        "kittools.id,\n".
+        "kittools.kitid,\n".
+        "kittools.toolid,\n".
+        "kittools.custid,\n".
+        "kittools.reserved,\n".
+        "kittools.qrcode,\n".
+        "kittools.`status`,\n".
+        "tools.stockcode,\n".
+        "tools.description AS toolname,\n".
+        "tools.serialno,\n".
+        "tools.categoryid,\n".
+        "toolcategories.description AS categoryname,\n".
+        "kits.description AS kitname,\n".
+        "lockers.description AS lockername,\n".
+        "kits.lockerid\n".
+        "FROM\n".
+        "kittools\n".
+        "LEFT JOIN tools ON tools.id = kittools.toolid\n".
+        "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
+        "LEFT JOIN kits ON kits.id = kittools.kitid\n".
+        "LEFT JOIN lockers ON lockers.id = kits.lockerid\n".
+        "WHERE\n".
+        "kittools.custid = $custid";
+
+
+
+    $tools = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($tools) {
+            echo  '{"tools": '. json_encode($tools). '}';
+            $kits = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+//Update kit tool
+
+$app->put('/api/admin/kittool/update/{custid}/{toolkitid}', function(Request $request, Response $response) {
+
+    $toolkitid = $request->getAttribute('toolkitid');
+    $custid = $request->getAttribute('custid');
+
+    $kitid = $request->getParam('kitid');
+    $toolid = $request->getParam('toolid');
+    $qrcode = $request->getParam('qrcode');
+
+
+
+    $sql = "UPDATE kittools SET
+                   kitid = :kitid,
+                   toolid = :toolid,
+                   qrcode = :qrcode
+             WHERE id = $toolkitid AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':kitid', $kitid);
+        $stmt->bindParam(':toolid', $toolid);
+        $stmt->bindParam(':qrcode', $qrcode);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Kit tool updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// Add KIT Tool
+
+$app->post('/api/admin/kittool/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $kitid = $request-> getParam('kitid');
+    $toolid = $request->getParam('toolid');
+    $qrcode = $request->getParam('qrcode');
+
+
+
+
+    $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES 
+            (:kitid, :toolid,:custid, 0, 0)";
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':kitid', $kitid);
+        $stmt->bindParam(':toolid', $toolid);
+        $stmt->bindParam(':qrcode', $qrcode);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Kit Tool Added"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+
+
+});
+
+
+
+
+
 
 
 
