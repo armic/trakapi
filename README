@@ -36,6 +36,9 @@ admin.php
 24. added // View Tool Category List $app->get('/api/admin/toolcategory/list/{custid}', function(Request $request, Response $response)
 25. added //Update tool categoy $app->put('/api/admin/toolcategory/update/{custid}/{id}', function(Request $request, Response $response)
 26. added // Add Tool category $app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Response $response)
+27. added // View location List $app->get('/api/admin/locations/list/{custid}', function(Request $request, Response $response)
+28. added //Update Location $app->put('/api/admin/location/update/{custid}/{id}', function(Request $request, Response $response)
+29. added // Add location $app->post('/api/admin/location/add/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
