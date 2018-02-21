@@ -1129,7 +1129,7 @@ $app->get('/api/admin/kittools/list/{custid}', function(Request $request, Respon
 
 
 
-    $tools = null;
+    $kittools = null;
 
     try{
         // Get DB object
@@ -1138,8 +1138,8 @@ $app->get('/api/admin/kittools/list/{custid}', function(Request $request, Respon
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($tools) {
-            echo  '{"tools": '. json_encode($tools). '}';
+        if($kittools) {
+            echo  '{"kit tools": '. json_encode($kittools). '}';
             $kits = null;
             $db = null;
         } else {
@@ -1234,6 +1234,152 @@ $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Respons
 
 
 });
+
+//TOOLS
+
+// View Tool List
+
+$app->get('/api/admin/tools/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT\n".
+            "tools.id,\n".
+            "tools.custid,\n".
+            "tools.stockcode,\n".
+            "tools.description AS toolname,\n".
+            "tools.serialno,\n".
+            "tools.categoryid,\n".
+            "tools.toolimage,\n".
+            "toolcategories.description AS categoryname\n".
+            "FROM\n".
+            "tools\n".
+            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
+            "WHERE\n".
+            "tools.custid = $custid";
+
+
+
+    $tools = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($tools) {
+            echo  '{"tools": '. json_encode($tools). '}';
+            $kits = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+//Update tool
+
+$app->put('/api/admin/tool/update/{custid}/{toolid}', function(Request $request, Response $response) {
+
+    $toolkitid = $request->getAttribute('toolid');
+    $custid = $request->getAttribute('custid');
+
+    $stockcode = $request->getParam('stockcode');
+    $description = $request->getParam('description');
+    $categoryid = $request->getParam('categoryid');
+    $toolimage = $request->getParam('toolimage');
+    $serialno =  $request->getParam('serialno');
+
+
+
+
+    $sql = "UPDATE tools SET
+                   stockcode = :stockcode,
+                   description = :description,
+                   serialno = :serialno,
+                   categoryid = :categoryid,
+                   toolimage = :toolimage,
+             WHERE id = $toolid AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':stockcode', $stockcode);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':serialno', $serialno);
+        $stmt->bindParam(':categoryid', $categoryid);
+        $stmt->bindParam(':toolimage', $toolimage);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "tool updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// Add Tool
+
+$app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $stockcode = $request->getParam('stockcode');
+    $description = $request->getParam('description');
+    $categoryid = $request->getParam('categoryid');
+    $toolimage = $request->getParam('toolimage');
+    $serialno =  $request->getParam('serialno');
+
+
+
+    $sql = "INSERT INTO tools (custid,stockcode,description,serialno,categoryid,toolimage) VALUES 
+            (:custid,:stockcode,:description,:serialno,:categoryid,:toolimage)";
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':stockcode', $stockcode);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':serialno', $serialno);
+        $stmt->bindParam(':categoryid', $categoryid);
+        $stmt->bindParam(':toolimage', $toolimage);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "Tool Added"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+
+
+});
+
+
+
+
 
 
 
