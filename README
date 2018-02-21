@@ -33,6 +33,9 @@ admin.php
 21. added // View Tool List $app->get('/api/admin/tools/list/{custid}', function(Request $request, Response $response)
 22. added //Update tool $app->put('/api/admin/tool/update/{custid}/{toolid}', function(Request $request, Response $response)
 23. added // Add Tool $app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $response)
+24. added // View Tool Category List $app->get('/api/admin/toolcategory/list/{custid}', function(Request $request, Response $response)
+25. added //Update tool categoy $app->put('/api/admin/toolcategory/update/{custid}/{id}', function(Request $request, Response $response)
+26. added // Add Tool category $app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
@@ -67,4 +70,14 @@ CREATE TABLE `log` (
      `active` int(1) DEFAULT NULL COMMENT '0 - inactive 1- active',
      PRIMARY KEY (`id`)
    ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Locker Table';
+
+3. Addes custid field in toolcategories table
+
+CREATE TABLE `toolcategories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL COMMENT 'Tool Categoy Description  kabtrak,portatrak,cribtrak,audittrak',
+  `custid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Tool category table';
+
 
