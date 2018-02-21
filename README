@@ -24,6 +24,9 @@ admin.php
 12. added // Add locker $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response $response)
 13. added // Disable specific  locker $app->put('/api/admin/locker/disable/{custid}/{lockerid}', function(Request $request, Response $response)
 14. added // enable specific  locker $app->put('/api/admin/locker/enable/{custid}/{lockerid}', function(Request $request, Response $response)
+15. added // View kit List $app->get('/api/admin/kits/list/{custid}', function(Request $request, Response $response)
+16. added //Update kit $app->put('/api/admin/kit/update/{custid}/{kitid}', function(Request $request, Response $response)
+17. added // Add KIT $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
