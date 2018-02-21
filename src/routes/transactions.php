@@ -421,7 +421,7 @@ $app->post('/api/transaction/reservation/kit/add/{custid}/{userid}/{kitid}', fun
 
     $custid = $request->getAttribute('custid');
     $userid = $request->getAttribute('userid');
-    $kitid = $request->getAttribute('kitidid');
+    $kitid = $request->getAttribute('kitid');
     $reservationdate  = date("Y-m-d");
     $reservationtime = date("h:i:sa");
 
