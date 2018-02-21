@@ -453,7 +453,7 @@ $app->post('/api/transaction/reservation/kit/add/{custid}/{userid}/{kitid}', fun
         //update tool reserved tah here
         $trk = new clstrak();
 
-        $trk->updateToolReservedStatus($custid,$toolid,1);
+        $trk->updateKitReservedStatus($custid,$kitid,1);
 
         echo '{"notice": {"Message": "KIT Reservation Added"}';
 
