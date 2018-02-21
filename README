@@ -27,6 +27,9 @@ admin.php
 15. added // View kit List $app->get('/api/admin/kits/list/{custid}', function(Request $request, Response $response)
 16. added //Update kit $app->put('/api/admin/kit/update/{custid}/{kitid}', function(Request $request, Response $response)
 17. added // Add KIT $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $response)
+18. added // View kit Tool List $app->get('/api/admin/kittools/list/{custid}', function(Request $request, Response $response)
+19. added //Update kit tool $app->put('/api/admin/kittool/update/{custid}/{toolkitid}', function(Request $request, Response $response)
+20. added // Add KIT Tool $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Response $response)
 
 
 transaction.php
