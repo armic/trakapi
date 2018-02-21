@@ -1485,6 +1485,118 @@ $app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Re
 
 });
 
+//LOCATIONS
+
+// View location List
+
+$app->get('/api/admin/locations/list/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    // Select statement
+
+    $sql = "SELECT * FROM locations WHERE custid = $custid";
+
+
+    $locations = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($locations) {
+            echo  '{"locations": '. json_encode($locations). '}';
+            $locations = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+//Update Location
+
+$app->put('/api/admin/location/update/{custid}/{id}', function(Request $request, Response $response) {
+
+    $id = $request->getAttribute('id');
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+
+
+
+    $sql = "UPDATE locations SET
+                   description = :description
+             WHERE id = $id AND custid = $custid";
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':description', $description);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "location updated"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+});
+
+// Add location
+
+$app->post('/api/admin/location/add/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+
+    $description = $request->getParam('description');
+
+
+
+    $sql = "INSERT INTO locations (custid,description) VALUES 
+            (:custid,:description)";
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':description', $description);
+
+
+        $stmt->execute();
+        $db = null;
+        echo '{"notice": {"text": "location  Added"}';
+
+    }catch(PDOException $e){
+        echo '{"error": {"text": '.$e->getMessage().'}';
+
+    }
+
+
+
+
+});
+
+
+
+
+
 
 
 
