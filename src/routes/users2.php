@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Henchman Products PTY.  Standard Copyright and Disclaimer Notice:
  *
@@ -23,11 +24,8 @@
  * Date: 2/2/18
  * Time: 10:27 AM
  */
-
-
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
-
 
 // Login
 $app->post('/api/user/login', function(Request $request, Response $response) {
@@ -36,49 +34,48 @@ $app->post('/api/user/login', function(Request $request, Response $response) {
     $password = $request->getParam('password');
     // Select statement\
 
-    $sql =  "SELECT\n".
-            "users.active,\n".
-            "users.auditrak,\n".
-            "users.role,\n".
-            "users.`level`,\n".
-            "users.custid,\n".
-            "users.userid,\n".
-            "employees.custid,\n".
-            "employees.firstname,\n".
-            "employees.lastname,\n".
-            "employees.username,\n".
-            "employees.password,\n".
-            "employees.email,\n".
-            "employees.photo,\n".
-            "employees.mobilenumber,\n".
-            "customers.`name`,\n".
-            "customers.contactperson,\n".
-            "customers.email,\n".
-            "customers.address\n".
-            "FROM\n".
-            "users\n".
-            "LEFT JOIN employees ON employees.id = users.userid\n".
-            "LEFT JOIN customers ON customers.id = employees.custid\n".
-            "WHERE\n".
-            "users.auditrak = 1 AND\n".
-            "users.active = 1 AND\n".
-            "employees.password = '". md5($password). "'";
+    $sql = "SELECT\n" .
+            "users.active,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.`level`,\n" .
+            "users.custid,\n" .
+            "users.userid,\n" .
+            "employees.custid,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" .
+            "employees.password,\n" .
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "employees.mobilenumber,\n" .
+            "customers.`name`,\n" .
+            "customers.contactperson,\n" .
+            "customers.email,\n" .
+            "customers.address\n" .
+            "FROM\n" .
+            "users\n" .
+            "LEFT JOIN employees ON employees.id = users.userid\n" .
+            "LEFT JOIN customers ON customers.id = employees.custid\n" .
+            "WHERE\n" .
+            "users.auditrak = 1 AND\n" .
+            "users.active = 1 AND\n" .
+            "employees.password = '" . md5($password) . "'";
 
 
-      // Check username
-      if (strpos($username,'@')) {
-         $sql = $sql." AND employees.email = '$username'";
-      } else {
-         $sql = $sql." AND employees.username = '$username'";
-
-      }
+    // Check username
+    if (strpos($username, '@')) {
+        $sql = $sql . " AND employees.email = '$username'";
+    } else {
+        $sql = $sql . " AND employees.username = '$username'";
+    }
 
 
     $user = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $user = $stmt->fetch(PDO::FETCH_OBJ);
@@ -86,21 +83,15 @@ $app->post('/api/user/login', function(Request $request, Response $response) {
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':password', $password);
 
-        if($user) {
-            echo  '{"error_string":"Success.", "error_code": 200, "result":' . json_encode($user).' }';
+        if ($user) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($user) . ', "code": 200 }';
             $user = null;
             $db = null;
         } else {
-            echo '{"error_string": "User doesn\'t exist", "error_code": 202 }';
- 
+            echo '{"success": false,"error_message": "User doesn\'t exist" , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
- 
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"' . $e->getMessage() . '": "abc" , "code": 202 }';
     }
 });
 
@@ -112,51 +103,47 @@ $app->get('/api/users/{custid}', function(Request $request, Response $response) 
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-            "employees.id,\n".
-            "employees.firstname,\n".
-            "employees.lastname,\n".
-            "employees.username,\n".
-            "employees.`password`,\n".
-            "employees.email,\n".
-            "employees.photo,\n".
-            "users.custid,\n".
-            "users.active,\n".
-            "users.auditrak,\n".
-            "users.role,\n".
-            "users.userid\n".
-            "FROM\n".
-            "users\n".
-            "LEFT JOIN employees ON employees.id = users.userid\n".
-            "WHERE\n".
-            "users.auditrak = 1 AND\n".
-            "users.active = 1 AND\n".
+    $sql = "SELECT DISTINCT\n" .
+            "employees.id,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" .
+            "employees.`password`,\n" .
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "users.custid,\n" .
+            "users.active,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.userid\n" .
+            "FROM\n" .
+            "users\n" .
+            "LEFT JOIN employees ON employees.id = users.userid\n" .
+            "WHERE\n" .
+            "users.auditrak = 1 AND\n" .
+            "users.active = 1 AND\n" .
             "users.custid = $custid";
 
     $users = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $users = $stmt->fetch(PDO::FETCH_OBJ);
 
-        if($users) {
-            echo  '{"result": '. json_encode($users). ', "error_code": 200  }';
+        if ($users) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($users) . ', "code": 200 }';
             $users = null;
             $db = null;
         } else {
-            echo '{"error_string": "No records found.", "error_code": 202 }';
-
- 
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
+    } catch (PDOException $e) {
 
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
- 
-
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -170,30 +157,31 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
     $userid = $request->getAttribute('userid');
     $custid = $request->getAttribute('custid');
 
-    $auditrak      = $request->getParam('auditrak');
+    $auditrak = $request->getParam('auditrak');
     $active = $request->getParam('active');
     $role = $request->getParam('role');
 
     $trk = new clstrak();
 
 
-    if ($trk->isUserExist($custid,$userid)) {
-       // User exist, check if auditrak is = 1
+    if ($trk->isUserExist($custid, $userid)) {
+        // User exist, check if auditrak is = 1
 
         if ($trk->isUserGranted($custid, $userid)) {
 
-             
-            
-            echo '{"error_string": "User is already granted access to auditTRAK", "error_code": 202 }';
 
+
+
+
+            echo '{"success": false,"error_message": "User is already granted access to auditTRAK" , "code": 202 }';
         } else {
 
-         // Need to set auditrak value to 1
+            // Need to set auditrak value to 1
 
             $sql = "UPDATE users  SET active = 1 WHERE custid = $custid AND userid = '$userid' AND auditrak = 1";
-            try{
+            try {
                 // Get DB object
-                $db= new db();
+                $db = new db();
                 $db = $db->connect();
                 $stmt = $db->prepare($sql);
 
@@ -203,22 +191,18 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
                 $stmt->execute();
                 $db = null;
-                echo '{"error_string": "User Granted.", "error_code": 200 "}';
 
-            }catch(PDOException $e){
-                echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-      
+                echo '{"success": true,"error_message": null, "result":"User Granted.", "code": 200 }';
+            } catch (PDOException $e) {
 
+                echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
             }
-
         }
-
-
-    }else {
+    } else {
         $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :level)";
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -237,18 +221,11 @@ $app->post('/api/user/grant/{userid}/{custid}', function(Request $request, Respo
 
             $stmt->execute();
             $db = null;
-            echo '{"error_string": "User Granted.", "error_code": 200 }';
-
-        }catch(PDOException $e){
-            echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-            
-             
-
+            echo '{"success": true,"error_message": null, "result":"User Granted.", "code": 200 }';
+        } catch (PDOException $e) {
+            echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
         }
-
-
     }
-
 });
 
 
@@ -259,26 +236,25 @@ $app->post('/api/user/revoke/{userid}/{custid}', function(Request $request, Resp
     $userid = $request->getAttribute('userid');
     $custid = $request->getAttribute('custid');
 
-    $auditrak      = $request->getParam('auditrak');
+    $auditrak = $request->getParam('auditrak');
     $active = $request->getParam('active');
     $role = $request->getParam('role');
 
     $trk = new clstrak();
 
-    if (!$trk->isUserExist($custid,$userid)) {
-     
-        echo '{"error_string": "Message": "User does not exist", "error_code": 202 }';
+    if (!$trk->isUserExist($custid, $userid)) {
 
 
+        echo '{"success": false,"error_message": "User does not exist" , "code": 202 }';
     } else {
 
         if ($trk->isUserGranted($custid, $userid)) {
 
             // Do an update here
             $sql = "UPDATE users  SET active = 0 WHERE custid = $custid AND userid = '$userid' AND auditrak = 1";
-            try{
+            try {
                 // Get DB object
-                $db= new db();
+                $db = new db();
                 $db = $db->connect();
                 $stmt = $db->prepare($sql);
 
@@ -288,26 +264,16 @@ $app->post('/api/user/revoke/{userid}/{custid}', function(Request $request, Resp
 
                 $stmt->execute();
                 $db = null;
-                echo '{"error_string": "User access revoked.", "error_code": 200 }';
 
-            }catch(PDOException $e){
-                echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-                 
-
+                echo '{"success": true,"error_message": null, "result":"User access revoked.", "code": 200 }';
+            } catch (PDOException $e) {
+                echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
             }
+        } else {
 
-
-        }else {
-   
-            
-            echo '{"error_string": "User access already revoked!", "error_code": 202 }';
-            
-
+            echo '{"success": false,"error_message": "User access already revoked!" , "code": 202 }';
         }
     }
-
-
-
 });
 
 

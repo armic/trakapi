@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Henchman Products PTY.  Standard Copyright and Disclaimer Notice:
  *
@@ -23,14 +24,12 @@
  * Date: 2/20/18
  * Time: 8:13 AM
  */
-
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 
 /**
  * Employee Paths
  */
-
 // Get employee list
 
 $app->get('/api/admin/employees/{custid}', function(Request $request, Response $response) {
@@ -38,44 +37,37 @@ $app->get('/api/admin/employees/{custid}', function(Request $request, Response $
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-        "employees.id,\n".
-        "employees.firstname,\n".
-        "employees.lastname,\n".
-        "employees.username,\n".
-        "employees.`password`,\n".
-        "employees.email,\n".
-        "employees.photo,\n".
-        "employees.custid\n".
-        "FROM employees\n".
-        "WHERE custid = $custid";
+    $sql = "SELECT DISTINCT\n" .
+            "employees.id,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" .
+            "employees.`password`,\n" .
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "employees.custid\n" .
+            "FROM employees\n" .
+            "WHERE custid = $custid";
 
     $employees = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $employees = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($employees) {
- 
-            echo '{"error_string": "Success", "result":'. json_encode($employees). ', "error_code": 200 }';
+        if ($employees) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($employees) . ', "code": 200 }';
+
             $employees = null;
             $db = null;
         } else {
-            
-            echo '{"error_string": "No records found.", "error_code": 202 }';
-     
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
- 
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -86,41 +78,41 @@ $app->get('/api/admin/employee/{id}', function(Request $request, Response $respo
     $id = $request->getAttribute('id');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-        "employees.id,\n".
-        "employees.firstname,\n".
-        "employees.lastname,\n".
-        "employees.username,\n".
-        "employees.`password`,\n".
-        "employees.email,\n".
-        "employees.photo,\n".
-        "employees.custid\n".
-        "FROM employees\n".
-        "WHERE id = $id";
+    $sql = "SELECT DISTINCT\n" .
+            "employees.id,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" .
+            "employees.`password`,\n" .
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "employees.custid\n" .
+            "FROM employees\n" .
+            "WHERE id = $id";
 
     $employees = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $employees = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($employees) {
-            echo  '{"error_string": '. json_encode($employees). '}';
+        if ($employees) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($employees) . ', "code": 200 }';
+
             $employees = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "Employee not found.", "error_code": 202 }';
+
+
+
+            echo '{"success": false,"error_message": "Employee not found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-         
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -134,20 +126,18 @@ $app->get('/api/admin/employees/count/{id}', function(Request $request, Response
     $sql = "SELECT DISTINCT* FROM employees WHERE  custId = $id
 ";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $employees = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         $numrows = $stmt->rowCount();
-        echo  '{"error_string ": '.  json_encode($numrows) .' , "error_code": 200 }';
+        echo '{"success": true,"error_message": null, "result":' . json_encode($numrows) . ', "code": 200 }';
+    } catch (PDOException $e) {
 
-    }catch(PDOException $e){
-         
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -175,9 +165,9 @@ $app->put('/api/admin/employee/update/{id}', function(Request $request, Response
                    password = :password
              WHERE id = $id";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -191,17 +181,12 @@ $app->put('/api/admin/employee/update/{id}', function(Request $request, Response
 
         $stmt->execute();
         $db = null;
-        echo '{"error_string":  "Employee updated" , "error_code": 200 }';
-
-    }catch(PDOException $e){
-         
-        
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
+        echo '{"success": true,"error_message": null, "result":"Employee updated", "code": 200 }';
+    } catch (PDOException $e) {
 
 
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add new employee
@@ -209,7 +194,7 @@ $app->put('/api/admin/employee/update/{id}', function(Request $request, Response
 $app->post('/api/admin/employee/add/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
-    $firstname = $request-> getParam('firstname');
+    $firstname = $request->getParam('firstname');
     $lastname = $request->getParam('lastname');
     $email = $request->getParam('email');
     $mobilenumber = $request->getParam('mobilenumber');
@@ -219,30 +204,30 @@ $app->post('/api/admin/employee/add/{custid}', function(Request $request, Respon
 
     $trk = new clstrak();
 
-    if($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username))
-    {
-        if($trk->isEmployeeEmailExist($email)) {
- 
-            echo '{"error_string": "Username/Email  already exist", "error_code": 202 }';
+    if ($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username)) {
+        if ($trk->isEmployeeEmailExist($email)) {
+
+
+            echo '{"success": false,"error_message": "Username/Email  already exist" , "code": 202 }';
         };
 
-        if($trk->isUsernameExist($username)) {
- 
-            echo '{"error_string": "Username/Email  already exist", "error_code": 202 }';
+        if ($trk->isUsernameExist($username)) {
+
+
+            echo '{"success": false,"error_message": "Username/Email  already exist" , "code": 202 }';
         };
 
-        if($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username)) {
-        
-            echo '{"error_string": "Username/Email  already exist", "error_code": 202 }';
-        };
+        if ($trk->isEmployeeEmailExist($email) or $trk->isUsernameExist($username)) {
 
-    }else {
+            echo '{"success": false,"error_message": "Username/Email  already exist" , "code": 202 }';
+        };
+    } else {
 
         $sql = "INSERT INTO employees (firstname, lastname, email,mobilenumber, custid,createddate,username,password) VALUES 
             (:firstname, :lastname,:email, :mobilenumber,  :custid, :createddate, :username, :password)";
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -258,33 +243,24 @@ $app->post('/api/admin/employee/add/{custid}', function(Request $request, Respon
 
             $stmt->execute();
             $db = null;
- 
-            
-            echo '{"error_string": "Employee Added.", "error_code": 200, "result": "success"}';
 
-        }catch(PDOException $e){
-             
-            
-            echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+
+            echo '{"success": true,"error_message": null, "result":"Employee Added.", "code": 200 }';
+        } catch (PDOException $e) {
+
+
+            echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
         }
-
-
-
-
     }
-
-
 });
 
 /**
  * End Employee Paths
  */
-
 /**
  * Tail  Paths
  */
-
 // Get tail list
 
 $app->get('/api/admin/tails/list/{custid}', function(Request $request, Response $response) {
@@ -292,38 +268,34 @@ $app->get('/api/admin/tails/list/{custid}', function(Request $request, Response 
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-        "tails.id,\n".
-        "tails.number,\n".
-        "tails.description\n".
-        "FROM tails\n".
-        "WHERE custid = $custid";
+    $sql = "SELECT DISTINCT\n" .
+            "tails.id,\n" .
+            "tails.number,\n" .
+            "tails.description\n" .
+            "FROM tails\n" .
+            "WHERE custid = $custid";
 
     $tails = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($tails) {
-       
-            
-            echo '{"error_string": '. json_encode($tails). ', "error_code": 200 }';
+        if ($tails) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($tails) . ', "code": 200 }';
             $tails = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
+    } catch (PDOException $e) {
 
-
-    }catch(PDOException $e){
-         
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -336,37 +308,34 @@ $app->get('/api/admin/tail/view/{custid}/{number}', function(Request $request, R
     $number = $request->getAttribute('number');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-        "tails.id,\n".
-        "tails.number,\n".
-        "tails.description\n".
-        "FROM tails\n".
-        "WHERE custid = $custid AND\n".
-        "number = $number";
+    $sql = "SELECT DISTINCT\n" .
+            "tails.id,\n" .
+            "tails.number,\n" .
+            "tails.description\n" .
+            "FROM tails\n" .
+            "WHERE custid = $custid AND\n" .
+            "number = $number";
     $tails = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($tails) {
- 
-            echo '{"error_string": '. json_encode($tails). ', "error_code": 200 }';
+        if ($tails) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($tails) . ', "code": 200 }';
             $tails = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
+    } catch (PDOException $e) {
 
-
-    }catch(PDOException $e){
-         
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -376,25 +345,24 @@ $app->get('/api/admin/tail/view/{custid}/{number}', function(Request $request, R
 $app->post('/api/admin/tail/add/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
-    $number = $request-> getParam('number');
+    $number = $request->getParam('number');
     $description = $request->getParam('description');
     $createddate = date("Y-m-d h:i:sa");
 
     $trk = new clstrak();
 
-    if($trk->isTailNumberExist($number,$custid))
-    {
- 
-        
-        echo '{"error_string": "Tail already exist"", "error_code": 202 }';
+    if ($trk->isTailNumberExist($number, $custid)) {
 
-    }else {
+
+
+        echo '{"success": false,"error_message": "Tail already exist" , "code": 202 }';
+    } else {
 
         $sql = "INSERT INTO tails (custid, number, description,createddate) VALUES 
             (:custid, :number,:description, :createddate)";
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -406,19 +374,13 @@ $app->post('/api/admin/tail/add/{custid}', function(Request $request, Response $
 
             $stmt->execute();
             $db = null;
-      
-            echo '{"error_string": "Tail Added.", "error_code": 200 }';
 
+            echo '{"success": true,"error_message": null, "result":"Tail Added.", "code": 200 }';
+        } catch (PDOException $e) {
 
-        }catch(PDOException $e){
-             
-            echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+            echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
         }
-
     }
-
-
 });
 
 
@@ -437,26 +399,23 @@ $app->put('/api/admin/tail/update/{number}/{custid}', function(Request $request,
                   
              WHERE number = '$number' AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':description', $description);
         $stmt->execute();
         $db = null;
-     
-        
-        echo '{"error_string": "Tail updated.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-         
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+
+        echo '{"success": true,"error_message": null, "result":"Tail updated.", "code": 200 }';
+    } catch (PDOException $e) {
+
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 
@@ -473,24 +432,21 @@ $app->put('/api/admin/tail/disable/{number}/{custid}', function(Request $request
                     active = 0
              WHERE number = '$number' AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':description', $description);
         $stmt->execute();
         $db = null;
-         
-        echo '{"error_string": "Tail disabled.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+        echo '{"success": true,"error_message": null, "result":"Tail disabled.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Activate specific Tail
@@ -506,39 +462,30 @@ $app->put('/api/admin/tail/enable/{number}/{custid}', function(Request $request,
                     active = 1
              WHERE number = '$number' AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':description', $description);
         $stmt->execute();
         $db = null;
- 
-        echo '{"error_string": "Tail enabled.", "error_code": 200 }';
 
 
-    }catch(PDOException $e){
-                echo '{"error": {"text": '.$e->getMessage().'}';
-
-
+        echo '{"success": true,"error_message": null, "result":"Tail enabled.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"error": {"text": ' . $e->getMessage() . '}';
     }
-
-
 });
 
 
 /**
  * End Tail  Paths
  */
-
-
 /**
  * User  Paths
  */
-
-
 // Get user list
 
 
@@ -547,49 +494,46 @@ $app->get('/api/admin/users/{custid}', function(Request $request, Response $resp
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-        "employees.id,\n".
-        "employees.firstname,\n".
-        "employees.lastname,\n".
-        "employees.username,\n".
-        "employees.`password`,\n".
-        "employees.email,\n".
-        "employees.photo,\n".
-        "users.custid,\n".
-        "users.active,\n".
-        "users.auditrak,\n".
-        "users.role,\n".
-        "users.userid\n".
-        "FROM\n".
-        "users\n".
-        "LEFT JOIN employees ON employees.id = users.userid\n".
-        "WHERE\n".
-        "users.auditrak = 1 AND\n".
-        "users.custid = $custid";
+    $sql = "SELECT DISTINCT\n" .
+            "employees.id,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" .
+            "employees.`password`,\n" .
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "users.custid,\n" .
+            "users.active,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.userid\n" .
+            "FROM\n" .
+            "users\n" .
+            "LEFT JOIN employees ON employees.id = users.userid\n" .
+            "WHERE\n" .
+            "users.auditrak = 1 AND\n" .
+            "users.custid = $custid";
 
     $users = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $users = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($users) {
-        
-            echo '{"error_string": '. json_encode($users). ', "error_code": 200 }';
+        if ($users) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($users) . ', "code": 200 }';
             $users = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-         echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -601,50 +545,48 @@ $app->get('/api/admin/user/{userid}', function(Request $request, Response $respo
     $userid = $request->getAttribute('userid');
     // Select statement
 
-    $sql = "SELECT DISTINCT\n".
-        "employees.id,\n".
-        "employees.firstname,\n".
-        "employees.lastname,\n".
-        "employees.username,\n".
-        "employees.`password`,\n".
-        "employees.email,\n".
-        "employees.photo,\n".
-        "users.id,\n".
-        "users.custid,\n".
-        "users.active,\n".
-        "users.auditrak,\n".
-        "users.role,\n".
-        "users.userid\n".
-        "FROM\n".
-        "users\n".
-        "LEFT JOIN employees ON employees.id = users.userid\n".
-        "WHERE\n".
-        "users.userid = $userid AND\n".
-        "users.auditrak =1";
+    $sql = "SELECT DISTINCT\n" .
+            "employees.id,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" .
+            "employees.`password`,\n" .
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "users.id,\n" .
+            "users.custid,\n" .
+            "users.active,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.userid\n" .
+            "FROM\n" .
+            "users\n" .
+            "LEFT JOIN employees ON employees.id = users.userid\n" .
+            "WHERE\n" .
+            "users.userid = $userid AND\n" .
+            "users.auditrak =1";
 
 
     $user = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $user = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($user) {
-            echo '{"error_string": '. json_encode($users). ', "error_code": 200 }';
+        if ($user) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($users) . ', "code": 200 }';
             $users = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "User not found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "User not found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -665,9 +607,9 @@ $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request,
                    level = :level
              WHERE userid = $userid AND custid = $custid AND auditrak= 1";
     echo $sql;
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -678,26 +620,18 @@ $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request,
 
         $stmt->execute();
         $db = null;
- 
-        echo '{"error_string": "User updated.", "error_code": 200 }';
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": true,"error_message": null, "result":"User updated.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 /**
  * User  Paths
  */
-
-
 /**
  * reservation  Paths
  */
-
 // Reservation List
 
 
@@ -707,58 +641,55 @@ $app->get('/api/admin/reservation/list/{custid}', function(Request $request, Res
     // Select statement
 
 
-    $sql =  "SELECT\n".
-            "reservations.custid,\n".
-            "reservations.reservationdate,\n".
-            "reservations.reservationtime,\n".
-            "reservations.userid,\n".
-            "reservations.kitid,\n".
-            "reservations.toolid,\n".
-            "reservations.flag,\n".
-            "customers.`name`,\n".
-            "employees.firstname,\n".
-            "employees.lastname,\n".
-            "kits.description AS kitname,\n".
-            "lockers.description AS lockername,\n".
-            "tools.stockcode,\n".
-            "tools.descriptionvAS toolname\n".
-            "FROM\n".
-            "reservations\n".
-            "LEFT JOIN customers ON customers.id = reservations.custid\n".
-            "LEFT JOIN employees ON employees.id = reservations.userid\n".
-            "LEFT JOIN kits ON kits.id = reservations.kitid\n".
-            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n".
-            "LEFT JOIN kittools ON kittools.id = reservations.toolid\n".
-            "LEFT JOIN tools ON tools.id = kittools.toolid\n".
-            "WHERE\n".
-            "reservations.custid = $custid\n".
-            "ORDER BY\n".
-            "reservations.reservationdate DESC,\n".
+    $sql = "SELECT\n" .
+            "reservations.custid,\n" .
+            "reservations.reservationdate,\n" .
+            "reservations.reservationtime,\n" .
+            "reservations.userid,\n" .
+            "reservations.kitid,\n" .
+            "reservations.toolid,\n" .
+            "reservations.flag,\n" .
+            "customers.`name`,\n" .
+            "employees.firstname,\n" .
+            "employees.lastname,\n" .
+            "kits.description AS kitname,\n" .
+            "lockers.description AS lockername,\n" .
+            "tools.stockcode,\n" .
+            "tools.descriptionvAS toolname\n" .
+            "FROM\n" .
+            "reservations\n" .
+            "LEFT JOIN customers ON customers.id = reservations.custid\n" .
+            "LEFT JOIN employees ON employees.id = reservations.userid\n" .
+            "LEFT JOIN kits ON kits.id = reservations.kitid\n" .
+            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n" .
+            "LEFT JOIN kittools ON kittools.id = reservations.toolid\n" .
+            "LEFT JOIN tools ON tools.id = kittools.toolid\n" .
+            "WHERE\n" .
+            "reservations.custid = $custid\n" .
+            "ORDER BY\n" .
+            "reservations.reservationdate DESC,\n" .
             "reservations.reservationtime DESC";
 
     $reservation = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $reservation = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($reservation) {
- 
-            echo '{"error_string": '. json_encode($reservation). ', "error_code": 200 }';
+        if ($reservation) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($reservation) . ', "code": 200 }';
             $reservation = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -777,33 +708,28 @@ $app->get('/api/admin/log/list/{custid}', function(Request $request, Response $r
 
     $logs = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($logs) {
- 
-            echo '{"error_string": '. json_encode($logs). ', "error_code": 200 }';
+        if ($logs) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($logs) . ', "code": 200 }';
             $logs = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
 
 // Lockers
-
 // View locker list
 
 $app->get('/api/admin/locker/list/{custid}', function(Request $request, Response $response) {
@@ -811,44 +737,40 @@ $app->get('/api/admin/locker/list/{custid}', function(Request $request, Response
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT\n".
-            "lockers.id,\n".
-            "lockers.custid,\n".
-            "lockers.description AS lockername,\n".
-            "lockers.`code`,\n".
-            "lockers.locationid,\n".
-            "locations.description AS locationname\n".
-            "FROM\n".
-            "lockers\n".
-            "LEFT JOIN locations ON locations.id = lockers.locationid\n".
-            "WHERE\n".
+    $sql = "SELECT\n" .
+            "lockers.id,\n" .
+            "lockers.custid,\n" .
+            "lockers.description AS lockername,\n" .
+            "lockers.`code`,\n" .
+            "lockers.locationid,\n" .
+            "locations.description AS locationname\n" .
+            "FROM\n" .
+            "lockers\n" .
+            "LEFT JOIN locations ON locations.id = lockers.locationid\n" .
+            "WHERE\n" .
             "lockers.custid = $custid";
 
 
 
     $lockers = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($lockers) {
- 
-            echo '{"error_string": '. json_encode($lockers). ', "error_code": 200 }';
+        if ($lockers) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($lockers) . ', "code": 200 }';
             $logs = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
+
+            echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -871,9 +793,9 @@ $app->put('/api/admin/locker/update/{custid}/{lockerid}', function(Request $requ
                    locationid = :locationid
              WHERE id = $lockerid AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -885,17 +807,13 @@ $app->put('/api/admin/locker/update/{custid}/{lockerid}', function(Request $requ
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "locker updated.", "error_code": 200 }';
 
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+        echo '{"success": true,"error_message": null, "result":"locker updated.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add locker
@@ -903,7 +821,7 @@ $app->put('/api/admin/locker/update/{custid}/{lockerid}', function(Request $requ
 $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
-    $description = $request-> getParam('description');
+    $description = $request->getParam('description');
     $code = $request->getParam('code');
     $locationid = $request->getParam('locationid');
     $active = $request->getParam('active');
@@ -912,33 +830,29 @@ $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response
 
 
 
-        $sql = "INSERT INTO lockers (custid, description, code,locationid, active) VALUES 
+    $sql = "INSERT INTO lockers (custid, description, code,locationid, active) VALUES 
             (:custid, :description,:code, :locationid, :active)";
-        try{
-            // Get DB object
-            $db= new db();
-            $db = $db->connect();
-            $stmt = $db->prepare($sql);
+    try {
+        // Get DB object
+        $db = new db();
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
 
-            $stmt->bindParam(':custid', $custid);
-            $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':code', $code);
-            $stmt->bindParam(':locationid', $locationid);
-            $stmt->bindParam(':locationid', $active);
-
-
-            $stmt->execute();
-            $db = null;
- 
-            echo '{"error_string": "locker Added".", "error_code": 200 }';
-        }catch(PDOException $e){
-            echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
-        }
+        $stmt->bindParam(':custid', $custid);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':code', $code);
+        $stmt->bindParam(':locationid', $locationid);
+        $stmt->bindParam(':locationid', $active);
 
 
+        $stmt->execute();
+        $db = null;
 
 
+        echo '{"success": true,"error_message": null, "result":"locker Added", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
+    }
 });
 
 // Disable specific  locker
@@ -954,9 +868,9 @@ $app->put('/api/admin/locker/disable/{custid}/{lockerid}', function(Request $req
                    active = 0
              WHERE id = $lockerid AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -964,16 +878,11 @@ $app->put('/api/admin/locker/disable/{custid}/{lockerid}', function(Request $req
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "locker disabled.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": true,"error_message": null, "result":"locker disabled.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // enable specific  locker
@@ -989,9 +898,9 @@ $app->put('/api/admin/locker/enable/{custid}/{lockerid}', function(Request $requ
                    active = 1
              WHERE id = $lockerid AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -999,21 +908,14 @@ $app->put('/api/admin/locker/enable/{custid}/{lockerid}', function(Request $requ
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "locker enabled", "error_code": 202 }';
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": true,"error_message": null, "result":"locker enabled", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 
 //KITS
-
 // View kit List
 
 $app->get('/api/admin/kits/list/{custid}', function(Request $request, Response $response) {
@@ -1021,50 +923,47 @@ $app->get('/api/admin/kits/list/{custid}', function(Request $request, Response $
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT\n".
-            "kits.id,\n".
-            "kits.lockerid,\n".
-            "kits.description,\n".
-            "kits.custid,\n".
-            "kits.reserved,\n".
-            "kits.qrcode,\n".
-            "kits.kitlocation,\n".
-            "kits.`status`,\n".
-            "lockers.description AS lockername,\n".
-            "locations.description AS locationname\n".
-            "FROM\n".
-            "kits\n".
-            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n".
-            "LEFT JOIN locations ON locations.id = lockers.locationid\n".
-            "WHERE\n".
+    $sql = "SELECT\n" .
+            "kits.id,\n" .
+            "kits.lockerid,\n" .
+            "kits.description,\n" .
+            "kits.custid,\n" .
+            "kits.reserved,\n" .
+            "kits.qrcode,\n" .
+            "kits.kitlocation,\n" .
+            "kits.`status`,\n" .
+            "lockers.description AS lockername,\n" .
+            "locations.description AS locationname\n" .
+            "FROM\n" .
+            "kits\n" .
+            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n" .
+            "LEFT JOIN locations ON locations.id = lockers.locationid\n" .
+            "WHERE\n" .
             "kits.custid = $custid";
 
 
 
     $kits = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kits) {
- 
-            
-            echo '{"error_string": '. json_encode($kits). ', "error_code": 200 }';
+        if ($kits) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($kits) . ', "code": 200 }';
+
             $kits = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -1087,9 +986,9 @@ $app->put('/api/admin/kit/update/{custid}/{kitid}', function(Request $request, R
                    lockerid = :lockerid
              WHERE id = $kitid AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1101,16 +1000,13 @@ $app->put('/api/admin/kit/update/{custid}/{kitid}', function(Request $request, R
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "Kit updated.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+
+        echo '{"success": true,"error_message": null, "result":"Kit updated.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add KIT
@@ -1118,7 +1014,7 @@ $app->put('/api/admin/kit/update/{custid}/{kitid}', function(Request $request, R
 $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
-    $description = $request-> getParam('description');
+    $description = $request->getParam('description');
     $qrcode = $request->getParam('qrcode');
     $lockerid = $request->getParam('lockerid');
 
@@ -1127,9 +1023,9 @@ $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $r
 
     $sql = "INSERT INTO kits (custid, description, lockerid,qrcode, reserved,status) VALUES 
             (:custid, :description,:lockerid, :qrcode, 0, 0)";
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1141,18 +1037,11 @@ $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $r
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "Kit Added.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+        echo '{"success": true,"error_message": null, "result":"Kit Added.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
-
-
 });
 
 //Kit Tools
@@ -1163,57 +1052,54 @@ $app->get('/api/admin/kittools/list/{custid}', function(Request $request, Respon
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT\n".
-        "kittools.id,\n".
-        "kittools.kitid,\n".
-        "kittools.toolid,\n".
-        "kittools.custid,\n".
-        "kittools.reserved,\n".
-        "kittools.qrcode,\n".
-        "kittools.`status`,\n".
-        "tools.stockcode,\n".
-        "tools.description AS toolname,\n".
-        "tools.serialno,\n".
-        "tools.categoryid,\n".
-        "toolcategories.description AS categoryname,\n".
-        "kits.description AS kitname,\n".
-        "lockers.description AS lockername,\n".
-        "kits.lockerid\n".
-        "FROM\n".
-        "kittools\n".
-        "LEFT JOIN tools ON tools.id = kittools.toolid\n".
-        "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
-        "LEFT JOIN kits ON kits.id = kittools.kitid\n".
-        "LEFT JOIN lockers ON lockers.id = kits.lockerid\n".
-        "WHERE\n".
-        "kittools.custid = $custid";
+    $sql = "SELECT\n" .
+            "kittools.id,\n" .
+            "kittools.kitid,\n" .
+            "kittools.toolid,\n" .
+            "kittools.custid,\n" .
+            "kittools.reserved,\n" .
+            "kittools.qrcode,\n" .
+            "kittools.`status`,\n" .
+            "tools.stockcode,\n" .
+            "tools.description AS toolname,\n" .
+            "tools.serialno,\n" .
+            "tools.categoryid,\n" .
+            "toolcategories.description AS categoryname,\n" .
+            "kits.description AS kitname,\n" .
+            "lockers.description AS lockername,\n" .
+            "kits.lockerid\n" .
+            "FROM\n" .
+            "kittools\n" .
+            "LEFT JOIN tools ON tools.id = kittools.toolid\n" .
+            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n" .
+            "LEFT JOIN kits ON kits.id = kittools.kitid\n" .
+            "LEFT JOIN lockers ON lockers.id = kits.lockerid\n" .
+            "WHERE\n" .
+            "kittools.custid = $custid";
 
 
 
     $kittools = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kittools) {
- 
-            
-            echo '{"error_string": '. json_encode($kittools). ', "error_code": 200 }';
+        if ($kittools) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($kittools) . ', "code": 200 }';
+
             $kits = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -1236,9 +1122,9 @@ $app->put('/api/admin/kittool/update/{custid}/{toolkitid}', function(Request $re
                    qrcode = :qrcode
              WHERE id = $toolkitid AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1249,16 +1135,12 @@ $app->put('/api/admin/kittool/update/{custid}/{toolkitid}', function(Request $re
 
         $stmt->execute();
         $db = null;
-        
-        echo '{"error_string": "Kit tool updated.", "error_code": 200 }';
- 
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+        echo '{"success": true,"error_message": null, "result":"Kit tool updated.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add KIT Tool
@@ -1266,7 +1148,7 @@ $app->put('/api/admin/kittool/update/{custid}/{toolkitid}', function(Request $re
 $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
-    $kitid = $request-> getParam('kitid');
+    $kitid = $request->getParam('kitid');
     $toolid = $request->getParam('toolid');
     $qrcode = $request->getParam('qrcode');
 
@@ -1275,9 +1157,9 @@ $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Respons
 
     $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES 
             (:kitid, :toolid,:custid, 0, :qrcode, 0)";
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1289,22 +1171,16 @@ $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Respons
 
         $stmt->execute();
         $db = null;
-    
-        
-        echo '{"error_string": "Kit Tool Added.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+
+        echo '{"success": true,"error_message": null, "result":"Kit Tool Added.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
-
-
 });
 
 //TOOLS
-
 // View Tool List
 
 $app->get('/api/admin/tools/list/{custid}', function(Request $request, Response $response) {
@@ -1312,47 +1188,44 @@ $app->get('/api/admin/tools/list/{custid}', function(Request $request, Response 
     $custid = $request->getAttribute('custid');
     // Select statement
 
-    $sql = "SELECT\n".
-            "tools.id,\n".
-            "tools.custid,\n".
-            "tools.stockcode,\n".
-            "tools.description AS toolname,\n".
-            "tools.serialno,\n".
-            "tools.categoryid,\n".
-            "tools.toolimage,\n".
-            "toolcategories.description AS categoryname\n".
-            "FROM\n".
-            "tools\n".
-            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
-            "WHERE\n".
+    $sql = "SELECT\n" .
+            "tools.id,\n" .
+            "tools.custid,\n" .
+            "tools.stockcode,\n" .
+            "tools.description AS toolname,\n" .
+            "tools.serialno,\n" .
+            "tools.categoryid,\n" .
+            "tools.toolimage,\n" .
+            "toolcategories.description AS categoryname\n" .
+            "FROM\n" .
+            "tools\n" .
+            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n" .
+            "WHERE\n" .
             "tools.custid = $custid";
 
 
 
     $tools = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($tools) {
-      
-            
-            echo '{"error_string": '. json_encode($tools). ', "error_code": 200 }';
+        if ($tools) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($tools) . ', "code": 200 }';
+
             $kits = null;
             $db = null;
         } else {
-                        
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -1367,7 +1240,7 @@ $app->put('/api/admin/tool/update/{custid}/{toolid}', function(Request $request,
     $description = $request->getParam('description');
     $categoryid = $request->getParam('categoryid');
     $toolimage = $request->getParam('toolimage');
-    $serialno =  $request->getParam('serialno');
+    $serialno = $request->getParam('serialno');
 
 
 
@@ -1380,9 +1253,9 @@ $app->put('/api/admin/tool/update/{custid}/{toolid}', function(Request $request,
                    toolimage = :toolimage,
              WHERE id = $toolid AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1395,16 +1268,13 @@ $app->put('/api/admin/tool/update/{custid}/{toolid}', function(Request $request,
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "tool updated.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+
+        echo '{"success": true,"error_message": null, "result":"tool updated.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add Tool
@@ -1416,15 +1286,15 @@ $app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $
     $description = $request->getParam('description');
     $categoryid = $request->getParam('categoryid');
     $toolimage = $request->getParam('toolimage');
-    $serialno =  $request->getParam('serialno');
+    $serialno = $request->getParam('serialno');
 
 
 
     $sql = "INSERT INTO tools (custid,stockcode,description,serialno,categoryid,toolimage) VALUES 
             (:custid,:stockcode,:description,:serialno,:categoryid,:toolimage)";
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1438,22 +1308,16 @@ $app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $
 
         $stmt->execute();
         $db = null;
- 
-        
-        echo '{"error_string": "Tool Added.", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+
+        echo '{"success": true,"error_message": null, "result":"Tool Added.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
-
-
 });
 
 // Tool Category
-
 // View Tool Category List
 
 $app->get('/api/admin/toolcategory/list/{custid}', function(Request $request, Response $response) {
@@ -1466,28 +1330,26 @@ $app->get('/api/admin/toolcategory/list/{custid}', function(Request $request, Re
 
     $categories = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($categories) {
-     
-            echo '{"error_string": '. json_encode($categories). ', "error_code": 200 }';
-            
+        if ($categories) {
+
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($categories) . ', "code": 200 }';
             $categories = null;
             $db = null;
         } else {
-             
-            echo '{"error_string": "No records found.", "error_code": 202 }';
+
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -1506,9 +1368,9 @@ $app->put('/api/admin/toolcategory/update/{custid}/{id}', function(Request $requ
                    description = :description
              WHERE id = $id AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1517,15 +1379,12 @@ $app->put('/api/admin/toolcategory/update/{custid}/{id}', function(Request $requ
 
         $stmt->execute();
         $db = null;
- 
-        echo '{"error_string": "tool category updated", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+        echo '{"success": true,"error_message": null, "result":"Tool category updated", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add Tool category
@@ -1540,9 +1399,9 @@ $app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Re
 
     $sql = "INSERT INTO toolcategories (custid,description) VALUES 
             (:custid,:description)";
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1552,22 +1411,15 @@ $app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Re
 
         $stmt->execute();
         $db = null;
- 
-        echo '{"error_string": "Tool Category  Added", "error_code": 200 }';
-        
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
 
+        echo '{"success": true,"error_message": null, "result":"Tool Category  Added", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
-
-
 });
 
 //LOCATIONS
-
 // View location List
 
 $app->get('/api/admin/locations/list/{custid}', function(Request $request, Response $response) {
@@ -1580,29 +1432,26 @@ $app->get('/api/admin/locations/list/{custid}', function(Request $request, Respo
 
     $locations = null;
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($locations) {
-            echo  '{"locations": '. json_encode($locations). '}';
+        if ($locations) {
+            echo '{"success": true,"error_message": null, "result":' . json_encode($locations) . ', "code": 200 }';
+
             $locations = null;
             $db = null;
         } else {
-    
-            echo '{"error_string": "No records found.", "error_code": 202 }';
 
+
+            echo '{"success": false,"error_message": "No records found." , "code": 202 }';
         }
+    } catch (PDOException $e) {
 
-
-    }catch(PDOException $e){
- 
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-
-
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -1621,9 +1470,9 @@ $app->put('/api/admin/location/update/{custid}/{id}', function(Request $request,
                    description = :description
              WHERE id = $id AND custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1632,17 +1481,13 @@ $app->put('/api/admin/location/update/{custid}/{id}', function(Request $request,
 
         $stmt->execute();
         $db = null;
-        echo '{"error_string": "location updated", "error_code": 200 }';
- 
 
-    }catch(PDOException $e){
-       
-        
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
+        echo '{"success": true,"error_message": null, "result":"Location updated", "code": 200 }';
+    } catch (PDOException $e) {
 
+
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
 });
 
 // Add location
@@ -1657,9 +1502,9 @@ $app->post('/api/admin/location/add/{custid}', function(Request $request, Respon
 
     $sql = "INSERT INTO locations (custid,description) VALUES 
             (:custid,:description)";
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -1669,18 +1514,12 @@ $app->post('/api/admin/location/add/{custid}', function(Request $request, Respon
 
         $stmt->execute();
         $db = null;
- 
-        echo '{"error_string": "location  Added", "error_code": 200 }';
 
-    }catch(PDOException $e){
-        echo '{"error_string": "'.$e->getMessage().'", "error_code": 202 }';
-         
 
+        echo '{"success": true,"error_message": null, "result":"Location  Added", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
-
-
-
-
 });
 
 
