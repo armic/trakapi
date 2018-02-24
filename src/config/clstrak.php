@@ -272,6 +272,48 @@ public function isTransactionExist($custid,$userid,$tailid,$kitid,$kittoolid,$fl
 
 }
 
+    public function isKiToolExist($custid,$code) {
+
+        $sql = "SELECT\n".
+            "kittools.id,\n".
+            "kittools.kitid,\n".
+            "kittools.toolid,\n".
+            "kittools.custid,\n".
+            "kittools.reserved,\n".
+            "kittools.qrcode,\n".
+            "kittools.`status`\n".
+            "FROM\n".
+            "kittools\n".
+            "WHERE\n".
+            "kittools.custid = $custid AND\n".
+            "kittools.qrcode = $code";
+
+
+        $kittool = null;
+
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $kittool = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if ($kittool) {
+
+                return true;
+
+            } else {
+                return false;
+            }
+
+
+        } catch (PDOException $e) {
+            return false;
+
+        }
+    }
+
+
 
 public  function updateToolStatus($custid, $toolid,$status){
 
