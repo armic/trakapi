@@ -1205,32 +1205,37 @@ $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Respons
     $qrcode = $request->getParam('qrcode');
 
 
+    $trk = new clstrak();
+
+    if($trk->isKiToolExist($custid,$qrcode)) {
+        echo '{"notice": {"Message": "Kit Exist"}';
+    }else {
 
 
-    $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES 
+        $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES 
             (:kitid, :toolid,:custid, 0, :qrcode, 0)";
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
 
-        $stmt->bindParam(':custid', $custid);
-        $stmt->bindParam(':kitid', $kitid);
-        $stmt->bindParam(':toolid', $toolid);
-        $stmt->bindParam(':qrcode', $qrcode);
+            $stmt->bindParam(':custid', $custid);
+            $stmt->bindParam(':kitid', $kitid);
+            $stmt->bindParam(':toolid', $toolid);
+            $stmt->bindParam(':qrcode', $qrcode);
 
 
-        $stmt->execute();
-        $db = null;
-        echo '{"notice": {"text": "Kit Tool Added"}';
+            $stmt->execute();
+            $db = null;
+            echo '{"notice": {"text": "Kit Tool Added"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
+
+        }
 
     }
-
-
 
 
 });
