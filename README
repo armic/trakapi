@@ -1,9 +1,19 @@
 CHANGELOG 2/27/2018
 
+
+Start building documentation using swagger
+
+![Alt Swagger Editor](swagger.jpg?raw=true "Swagger Documentation")
+
+
 clstrak.php
 
 1. Added public function isLocationExist($custid, $description)
    This validate added location record for duplicate
+
+admin.php
+
+1. update path /api/admin/location/add/{custid} - add validation
 
 
 
