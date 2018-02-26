@@ -83,11 +83,11 @@ clstrak.php
 
 1. added // Add log $app->post('/api/log/add/{custid}', function(Request $request, Response $response)
 
-clstrak.php
+## clstrak.php
 
 1. update public function isUserExist($custid, $userid) - added filter users.auditrak =1
 
-Database
+## Database
 
 1. added log table - to log system wide operations of Auditrak
 CREATE TABLE `log` (
