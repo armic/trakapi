@@ -1567,33 +1567,38 @@ $app->put('/api/admin/location/update/{custid}/{id}', function(Request $request,
 $app->post('/api/admin/location/add/{custid}', function(Request $request, Response $response) {
 
     $custid = $request->getAttribute('custid');
-
     $description = $request->getParam('description');
 
 
 
     $sql = "INSERT INTO locations (custid,description) VALUES 
             (:custid,:description)";
-    try{
-        // Get DB object
-        $db= new db();
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
 
-        $stmt->bindParam(':custid', $custid);
-        $stmt->bindParam(':description', $description);
+    $trk = new clstrak();
+
+    if($trk->isLocationExist($custid,$description)) {
+        echo '{"notice": {"Message": "Location Exist"}';
+    }else {
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindParam(':custid', $custid);
+            $stmt->bindParam(':description', $description);
 
 
-        $stmt->execute();
-        $db = null;
-        echo '{"notice": {"text": "location  Added"}';
+            $stmt->execute();
+            $db = null;
+            echo '{"notice": {"text": "location  Added"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
+
+        }
 
     }
-
-
 
 
 });
