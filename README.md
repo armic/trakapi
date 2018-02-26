@@ -1,4 +1,4 @@
-#CHANGELOG 2/27/2018
+# CHANGELOG 2/27/2018
 
 
 Start building documentation using swagger
@@ -17,8 +17,7 @@ admin.php
 1. update path /api/admin/location/add/{custid} - add validation
 
 
-
-#CHANGELOG 2/26/2018
+# CHANGELOG 2/26/2018
 
 clstrak.php
 
@@ -32,11 +31,7 @@ users.php
     $username = $request->getQueryParam('username');
     $password = $request->getQueryParam('password');
 
-
-
-
-
-CHANGELOG 2/21/2018
+# CHANGELOG 2/21/2018
 
 
 users.php
