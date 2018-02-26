@@ -30,11 +30,12 @@ use \Slim\Http\Response as Response;
 
 
 // Login
-$app->get('/api/user/login', function(Request $request, Response $response) {
+$app->post('/api/user/login', function(Request $request, Response $response) {
 
-    $username = $request->getParam('username');
-    $password = $request->getParam('password');
+    $username = $request->getQueryParam('username');
+    $password = $request->getQueryParam('password');
     // Select statement\
+
 
     $sql =  "SELECT\n".
             "users.active,\n".
