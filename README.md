@@ -1,4 +1,4 @@
-#CHANGELOG 2/27/2018
+# CHANGELOG 2/27/2018
 
 
 Start building documentation using swagger
@@ -18,7 +18,7 @@ admin.php
 
 
 
-#CHANGELOG 2/26/2018
+# CHANGELOG 2/26/2018
 
 clstrak.php
 
@@ -36,7 +36,7 @@ users.php
 
 
 
-CHANGELOG 2/21/2018
+# CHANGELOG 2/21/2018
 
 
 users.php
