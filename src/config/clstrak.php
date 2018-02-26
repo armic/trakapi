@@ -79,7 +79,7 @@ class clstrak
             "users\n" .
             "WHERE\n" .
             "users.custid = $custid AND\n" .
-            "users.auditrak = 1 AND\n".
+            "users.auditrak = 1 AND\n" .
             "users.userid = '$userid'";
 
         $user = null;
@@ -177,7 +177,7 @@ class clstrak
         }
     }
 
-   // Check if Tail number being added is existing. No tail number should be identical
+    // Check if Tail number being added is existing. No tail number should be identical
 
     public function isTailNumberExist($tailnumber, $custid)
     {
@@ -214,78 +214,79 @@ class clstrak
     }
 
 
+    public function isTransactionExist($custid, $userid, $tailid, $kitid, $kittoolid, $flag)
+    {
 
-public function isTransactionExist($custid,$userid,$tailid,$kitid,$kittoolid,$flag) {
+        $sql = "SELECT\n" .
+            "audittraktransactions.custid,\n" .
+            "audittraktransactions.type,\n" .
+            "audittraktransactions.datetimeissued,\n" .
+            "audittraktransactions.userid,\n" .
+            "audittraktransactions.tailid,\n" .
+            "audittraktransactions.lockerid,\n" .
+            "audittraktransactions.kitid,\n" .
+            "audittraktransactions.datereturned,\n" .
+            "audittraktransactions.kittoolid,\n" .
+            "audittraktransactions.workorder\n" .
+            "FROM\n" .
+            "audittraktransactions\n" .
+            "WHERE\n" .
+            "audittraktransactions.custid = $custid AND\n" .
+            "audittraktransactions.userid = $userid AND\n" .
+            "audittraktransactions.tailid = $tailid";
 
-    $sql = "SELECT\n".
-        "audittraktransactions.custid,\n".
-        "audittraktransactions.type,\n".
-        "audittraktransactions.datetimeissued,\n".
-        "audittraktransactions.userid,\n".
-        "audittraktransactions.tailid,\n".
-        "audittraktransactions.lockerid,\n".
-        "audittraktransactions.kitid,\n".
-        "audittraktransactions.datereturned,\n".
-        "audittraktransactions.kittoolid,\n".
-        "audittraktransactions.workorder\n".
-        "FROM\n".
-        "audittraktransactions\n".
-        "WHERE\n".
-        "audittraktransactions.custid = $custid AND\n".
-        "audittraktransactions.userid = $userid AND\n".
-        "audittraktransactions.tailid = $tailid";
-
-   if($flag == KIT) {
-       $sql = $sql. " AND audittraktransactions.kitid = $kitid";
-   }else{
-       $sql = $sql. " AND audittraktransactions.kittoolid = $kittoolid";
-   }
+        if ($flag == KIT) {
+            $sql = $sql . " AND audittraktransactions.kitid = $kitid";
+        } else {
+            $sql = $sql . " AND audittraktransactions.kittoolid = $kittoolid";
+        }
 
 
-    $transactions = null;
+        $transactions = null;
 
-    try {
-        // Get DB object
-        $db = new db();
-        $db = $db->connect();
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
 
-        foreach ($db->query($sql, PDO::FETCH_ASSOC) as $transactions) {
+            foreach ($db->query($sql, PDO::FETCH_ASSOC) as $transactions) {
 
-            if ($transactions['type'] == ISSUE ) {
+                if ($transactions['type'] == ISSUE) {
 
-                // Transaction exist
+                    // Transaction exist
 
-                return true;
-            } else {
-               // No , go on
-                return false;
+                    return true;
+                } else {
+                    // No , go on
+                    return false;
+                }
+
             }
+
+
+        } catch (PDOException $e) {
+            return false;
 
         }
 
 
-    } catch (PDOException $e) {
-        return false;
-
     }
 
+    public function isKiToolExist($custid, $code)
+    {
 
-}
-
-    public function isKiToolExist($custid,$code) {
-
-        $sql = "SELECT\n".
-            "kittools.id,\n".
-            "kittools.kitid,\n".
-            "kittools.toolid,\n".
-            "kittools.custid,\n".
-            "kittools.reserved,\n".
-            "kittools.qrcode,\n".
-            "kittools.`status`\n".
-            "FROM\n".
-            "kittools\n".
-            "WHERE\n".
-            "kittools.custid = $custid AND\n".
+        $sql = "SELECT\n" .
+            "kittools.id,\n" .
+            "kittools.kitid,\n" .
+            "kittools.toolid,\n" .
+            "kittools.custid,\n" .
+            "kittools.reserved,\n" .
+            "kittools.qrcode,\n" .
+            "kittools.`status`\n" .
+            "FROM\n" .
+            "kittools\n" .
+            "WHERE\n" .
+            "kittools.custid = $custid AND\n" .
             "kittools.qrcode = $code";
 
 
@@ -314,40 +315,41 @@ public function isTransactionExist($custid,$userid,$tailid,$kitid,$kittoolid,$fl
     }
 
 
+    public function updateToolStatus($custid, $toolid, $status)
+    {
 
-public  function updateToolStatus($custid, $toolid,$status){
+        $sql = "UPDATE kittools SET  status = $status  WHERE id = $toolid AND custid = $custid";
 
-         $sql =  "UPDATE kittools SET  status = $status  WHERE id = $toolid AND custid = $custid";
+        //$status 0 - IN 1 - OUT
 
-         //$status 0 - IN 1 - OUT
-
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
 
             $stmt->execute();
             $db = null;
-           // echo '{"notice": {"text": "Tool status updated"}';
+            // echo '{"notice": {"text": "Tool status updated"}';
 
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
 
         }
     }
 
 
-    public  function updateToolReservedStatus($custid, $toolid,$status){
+    public function updateToolReservedStatus($custid, $toolid, $status)
+    {
 
-        $sql =  "UPDATE kittools SET  reserved = $status  WHERE id = $toolid AND custid = $custid";
+        $sql = "UPDATE kittools SET  reserved = $status  WHERE id = $toolid AND custid = $custid";
 
         //$status 0 - IN 1 - OUT
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -356,22 +358,23 @@ public  function updateToolStatus($custid, $toolid,$status){
             $db = null;
             // echo '{"notice": {"text": "Tool reservation status updated"}';
 
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
 
         }
     }
 
 
-    public  function updateKitReservedStatus($custid, $kitid,$status){
+    public function updateKitReservedStatus($custid, $kitid, $status)
+    {
 
-        $sql =  "UPDATE kits SET  reserved = $status  WHERE id = $kitid AND custid = $custid";
+        $sql = "UPDATE kits SET  reserved = $status  WHERE id = $kitid AND custid = $custid";
 
         //$status 0 - Available 1 - Reserved
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -380,38 +383,40 @@ public  function updateToolStatus($custid, $toolid,$status){
             $db = null;
             // echo '{"notice": {"text": "Kit reservation  status updated"}';
 
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
 
         }
     }
 
-public  function updateKitStatus($custid, $kitid, $status ){
+    public function updateKitStatus($custid, $kitid, $status)
+    {
 
-    //$status 0 - IN 1 - OUT
+        //$status 0 - IN 1 - OUT
 
-        $sql =  "UPDATE kits SET  status = $status  WHERE id = $kitid AND custid = $custid";
+        $sql = "UPDATE kits SET  status = $status  WHERE id = $kitid AND custid = $custid";
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
 
             $stmt->execute();
             $db = null;
-           // echo '{"notice": {"text": "Kit status updated"}';
+            // echo '{"notice": {"text": "Kit status updated"}';
 
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
 
         }
 
     }
 
 
-    public  function isKitReserved($custid, $kitid){
+    public function isKitReserved($custid, $kitid)
+    {
 
         $sql = "SELECT *\n" .
             "FROM\n" .
@@ -422,14 +427,14 @@ public  function updateKitStatus($custid, $kitid, $status ){
 
         $reservations = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->query($sql);
             $reservations = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-            if($reservations) {
+            if ($reservations) {
                 return true;
                 $reservations = null;
                 $db = null;
@@ -439,14 +444,15 @@ public  function updateKitStatus($custid, $kitid, $status ){
             }
 
 
-        }catch(PDOException $e){
-            echo '{"error": {"Message": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"Message": ' . $e->getMessage() . '}';
 
         }
 
     }
 
-    public  function isToolReserved($custid, $toolid){
+    public function isToolReserved($custid, $toolid)
+    {
 
         $sql = "SELECT *\n" .
             "FROM\n" .
@@ -457,14 +463,14 @@ public  function updateKitStatus($custid, $kitid, $status ){
 
         $reservations = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->query($sql);
             $reservations = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-            if($reservations) {
+            if ($reservations) {
                 return true;
                 $reservations = null;
                 $db = null;
@@ -474,15 +480,16 @@ public  function updateKitStatus($custid, $kitid, $status ){
             }
 
 
-        }catch(PDOException $e){
-            echo '{"error": {"Message": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"Message": ' . $e->getMessage() . '}';
 
         }
 
     }
 
 
-    public  function isTailTransaction($custid, $number){
+    public function isTailTransaction($custid, $number)
+    {
 
         $sql = "SELECT *\n" .
             "FROM\n" .
@@ -493,14 +500,14 @@ public  function updateKitStatus($custid, $kitid, $status ){
 
         $tailtransactions = null;
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->query($sql);
             $tailtransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-            if($tailtransactions) {
+            if ($tailtransactions) {
                 return true;
                 $tailtransactions = null;
                 $db = null;
@@ -510,22 +517,23 @@ public  function updateKitStatus($custid, $kitid, $status ){
             }
 
 
-        }catch(PDOException $e){
-            echo '{"error": {"Message": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"Message": ' . $e->getMessage() . '}';
 
         }
 
     }
 
-    public  function DisableTail($custid, $number){
+    public function DisableTail($custid, $number)
+    {
 
         //$status 0 - IN 1 - OUT
 
-        $sql =  "UPDATE tails SET  active = 0  WHERE custid = $custid AND number = $number";
+        $sql = "UPDATE tails SET  active = 0  WHERE custid = $custid AND number = $number";
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -534,22 +542,23 @@ public  function updateKitStatus($custid, $kitid, $status ){
             $db = null;
             // echo '{"notice": {"text": "Tail disabled"}';
 
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
 
         }
 
     }
 
-    public  function EnableTail($custid, $number){
+    public function EnableTail($custid, $number)
+    {
 
         //$status 0 - IN 1 - OUT
 
-        $sql =  "UPDATE tails SET  active = 1  WHERE custid = $custid AND number = $number";
+        $sql = "UPDATE tails SET  active = 1  WHERE custid = $custid AND number = $number";
 
-        try{
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -558,12 +567,49 @@ public  function updateKitStatus($custid, $kitid, $status ){
             $db = null;
             // echo '{"notice": {"text": "Tail enabled"}';
 
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
 
         }
 
     }
 
-}
 
+    public function isLocationExist($custid, $description)
+    {
+
+        $sql = "SELECT\n" .
+            "locations.id,\n" .
+            "loctions.description,\n" .
+            "locations.custid\n" .
+            "FROM\n" .
+            "locations\n" .
+            "WHERE\n" .
+            "locations.custid = $custid AND\n" .
+            "locations.description = $description";
+
+
+        $locations = null;
+
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
+            $stmt = $db->query($sql);
+            $locations = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if ($locations) {
+
+                return true;
+
+            } else {
+                return false;
+            }
+
+
+        } catch (PDOException $e) {
+            return false;
+
+        }
+    }
+}
