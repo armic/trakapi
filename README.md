@@ -7,12 +7,12 @@ Start building documentation using swagger
 ![swagger](https://user-images.githubusercontent.com/1977383/36696544-75821f64-1b7f-11e8-9ef5-cedde333c101.jpg)
 
 
-clstrak.php
+## clstrak.php
 
 1. Added public function isLocationExist($custid, $description)
    This validate added location record for duplicate
 
-admin.php
+## admin.php
 
 1. update path /api/admin/location/add/{custid} - add validation
 
@@ -25,7 +25,7 @@ clstrak.php
 1. added public function isKiToolExist($custid,$code)
    This validate added kit tool on kittools table for duplicate record using unique qrcode field
 
-users.php
+## users.php
 
 1. update  path /api/user/login. Change Method from GET to POST and assigned variables (username and password) to QueryParams as shown
 
@@ -39,14 +39,14 @@ users.php
 CHANGELOG 2/21/2018
 
 
-users.php
+## users.php
 
 1. update $app->get('/api/users/{custid}, added filter on active field (active=1). This to load on granted users
 2. removed $app->get('/api/users/{custid} path
 3. remove // Update user record $app->put('/api/user/update/{userid}/{custid}', function(Request $request, Response $response) {
 
 
-admin.php
+## admin.php
 
 1. added $app->get('/api/admin/user/{userid}', function(Request $request, Response $response)
 2. added $app->get('/api/admin/users/{custid}', function(Request $request, Response $response), this loads both revoked/granted users
@@ -79,7 +79,7 @@ admin.php
 29. added // Add location $app->post('/api/admin/location/add/{custid}', function(Request $request, Response $response)
 
 
-transaction.php
+## transaction.php
 
 1. added // Add log $app->post('/api/log/add/{custid}', function(Request $request, Response $response)
 
