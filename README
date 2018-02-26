@@ -1,3 +1,21 @@
+CHANGELOG 2/26/2018
+
+clstrak.php
+
+1. added public function isKiToolExist($custid,$code)
+   This validate added kit tool on kittools table for duplicate record using unique qrcode field
+
+users.php
+
+1. update  path /api/user/login. Change Method from GET to POST and assigned variables (username and password) to QueryParams as shown
+
+    $username = $request->getQueryParam('username');
+    $password = $request->getQueryParam('password');
+
+
+
+
+
 CHANGELOG 2/21/2018
 
 
