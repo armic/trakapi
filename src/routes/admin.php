@@ -1604,6 +1604,53 @@ $app->post('/api/admin/location/add/{custid}', function(Request $request, Respon
 });
 
 
+//Update User role 1 - Administrator 0 - User
+
+$app->put('/api/admin/user/update/role/{custid}/{userid}/{role}', function(Request $request, Response $response) {
+
+    $userid = $request->getAttribute('userid');
+    $custid = $request->getAttribute('custid');
+    $role = $request->getAttribute('role');
+
+    if($role < 0 OR $role > 1) {
+        echo '{"error": {"text": User role must be administrator or User }';
+    }else{
+        $sql = "UPDATE users SET
+                   role = :role
+             WHERE id = $userid AND custid = $custid";
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindParam(':role', $role);
+
+
+            $stmt->execute();
+            $db = null;
+
+            if($role == 1) {
+                echo '{"notice": {"Message": "User role set to administrator"}';
+            }else{
+
+                echo '{"notice": {"Message": "User role set to user"}';
+            }
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+
+
+    }
+
+
+
+});
+
+
 
 
 
