@@ -1,3 +1,11 @@
+# CHANGELOG 3/2/2018
+
+## admin.php
+
+1. Added new path to update user role. 1- Administrator 0 - User
+
+put('/api/admin/user/update/role/{custid}/{userid}/{role}
+
 # CHANGELOG 2/27/2018
 
 
