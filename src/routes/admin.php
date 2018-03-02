@@ -788,10 +788,58 @@ $app->get('/api/admin/locker/list/{custid}', function(Request $request, Response
         $db= new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
-        $logs = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $lockers = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         if($lockers) {
             echo  '{"lockers": '. json_encode($lockers). '}';
+            $logs = null;
+            $db = null;
+        } else {
+            echo '{"error":"No records found.")';
+        }
+
+
+    }catch(PDOException $e){
+        echo '{"error": {"Message": '.$e->getMessage().'}';
+
+    }
+});
+
+
+// View a locker
+
+$app->get('/api/admin/locker/{custid}/{lockerid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $lockerid = $request->getAttribute('lockerid');
+    // Select statement
+
+    $sql = "SELECT\n".
+        "lockers.id,\n".
+        "lockers.custid,\n".
+        "lockers.description AS lockername,\n".
+        "lockers.`code`,\n".
+        "lockers.locationid,\n".
+        "locations.description AS locationname\n".
+        "FROM\n".
+        "lockers\n".
+        "LEFT JOIN locations ON locations.id = lockers.locationid\n".
+        "WHERE\n".
+        "lockers.custid = $custid AND lockers.id = $lockerid";
+
+
+
+    $locker = null;
+
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $locker = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        if($locker) {
+            echo  '{"locker": '. json_encode($lockers). '}';
             $logs = null;
             $db = null;
         } else {
