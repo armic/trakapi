@@ -6,6 +6,10 @@
 
 put('/api/admin/user/update/role/{custid}/{userid}/{role}
 
+2. Added new path to get specific locker record
+
+get('/api/admin/locker/{custid}/{lockerid}
+
 # CHANGELOG 2/27/2018
 
 
