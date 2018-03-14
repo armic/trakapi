@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Henchman Products PTY.  Standard Copyright and Disclaimer Notice:
  *
@@ -14,32 +15,28 @@
  * HENCHMAN SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE AND
  * ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED "AS IS".HENCHMAN
- * HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ *  HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
+class clstrak {
 
-
-class clstrak
-{
-
-    public function isUserExist($custid, $userid)
-    {
+    public function isUserExist($custid, $userid) {
 
         $sql = "SELECT\n" .
-            "users.id,\n" .
-            "users.custid,\n" .
-            "users.active,\n" .
-            "users.kabtrak,\n" .
-            "users.portatrak,\n" .
-            "users.cribtrak,\n" .
-            "users.auditrak,\n" .
-            "users.role,\n" .
-            "users.userid\n" .
-            "FROM\n" .
-            "users\n" .
-            "WHERE\n" .
-            "users.custid = $custid AND\n" .
-            "users.auditrak = 1 AND\n" .
-            "users.userid = '$userid'";
+                "users.id,\n" .
+                "users.custid,\n" .
+                "users.active,\n" .
+                "users.kabtrak,\n" .
+                "users.portatrak,\n" .
+                "users.cribtrak,\n" .
+                "users.auditrak,\n" .
+                "users.role,\n" .
+                "users.userid\n" .
+                "FROM\n" .
+                "users\n" .
+                "WHERE\n" .
+                "users.custid = $custid AND\n" .
+                "users.auditrak = 1 AND\n" .
+                "users.userid = '$userid'";
 
         $user = null;
 
@@ -53,34 +50,29 @@ class clstrak
             if ($user) {
 
                 return true;
-
             } else {
                 return false;
             }
-
-
         } catch (PDOException $e) {
             return false;
-
         }
     }
 
-    public function isUserGranted($custid, $userid)
-    {
+    public function isUserGranted($custid, $userid) {
 
         $sql = "SELECT\n" .
-            "users.id,\n" .
-            "users.custid,\n" .
-            "users.active,\n" .
-            "users.auditrak,\n" .
-            "users.role,\n" .
-            "users.userid\n" .
-            "FROM\n" .
-            "users\n" .
-            "WHERE\n" .
-            "users.custid = $custid AND\n" .
-            "users.auditrak = 1 AND\n" .
-            "users.userid = '$userid'";
+                "users.id,\n" .
+                "users.custid,\n" .
+                "users.active,\n" .
+                "users.auditrak,\n" .
+                "users.role,\n" .
+                "users.userid\n" .
+                "FROM\n" .
+                "users\n" .
+                "WHERE\n" .
+                "users.custid = $custid AND\n" .
+                "users.auditrak = 1 AND\n" .
+                "users.userid = '$userid'";
 
         $user = null;
 
@@ -99,24 +91,19 @@ class clstrak
 
                     return true;
                 }
-
             }
-
-
         } catch (PDOException $e) {
             return false;
-
         }
     }
 
-    public function isEmployeeEmailExist($email)
-    {
+    public function isEmployeeEmailExist($email) {
 
         $sql = "SELECT email\n" .
-            "FROM\n" .
-            "employees\n" .
-            "WHERE\n" .
-            "employees.email = '$email'";
+                "FROM\n" .
+                "employees\n" .
+                "WHERE\n" .
+                "employees.email = '$email'";
 
         $employees = null;
 
@@ -130,28 +117,23 @@ class clstrak
             if ($employees) {
 
                 return true;
-
             } else {
                 return false;
             }
-
-
         } catch (PDOException $e) {
             return false;
-
         }
     }
 
     // Check if the username being register is unique
     //
-    public function isUsernameExist($username)
-    {
+    public function isUsernameExist($username) {
 
         $sql = "SELECT username\n" .
-            "FROM\n" .
-            "employees\n" .
-            "WHERE\n" .
-            "employees.username = '$username'";
+                "FROM\n" .
+                "employees\n" .
+                "WHERE\n" .
+                "employees.username = '$username'";
 
         $employees = null;
 
@@ -165,29 +147,24 @@ class clstrak
             if ($employees) {
 
                 return true;
-
             } else {
                 return false;
             }
-
-
         } catch (PDOException $e) {
             return false;
-
         }
     }
 
     // Check if Tail number being added is existing. No tail number should be identical
 
-    public function isTailNumberExist($tailnumber, $custid)
-    {
+    public function isTailNumberExist($tailnumber, $custid) {
 
         $sql = "SELECT number\n" .
-            "FROM\n" .
-            "tails\n" .
-            "WHERE\n" .
-            "tails.custid = $custid\n" .
-            "AND tails.number = '$tailnumber'";
+                "FROM\n" .
+                "tails\n" .
+                "WHERE\n" .
+                "tails.custid = $custid\n" .
+                "AND tails.number = '$tailnumber'";
 
         $tails = null;
 
@@ -201,39 +178,33 @@ class clstrak
             if ($tails) {
 
                 return true;
-
             } else {
                 return false;
             }
-
-
         } catch (PDOException $e) {
             return false;
-
         }
     }
 
-
-    public function isTransactionExist($custid, $userid, $tailid, $kitid, $kittoolid, $flag)
-    {
+    public function isTransactionExist($custid, $userid, $tailid, $kitid, $kittoolid, $flag) {
 
         $sql = "SELECT\n" .
-            "audittraktransactions.custid,\n" .
-            "audittraktransactions.type,\n" .
-            "audittraktransactions.datetimeissued,\n" .
-            "audittraktransactions.userid,\n" .
-            "audittraktransactions.tailid,\n" .
-            "audittraktransactions.lockerid,\n" .
-            "audittraktransactions.kitid,\n" .
-            "audittraktransactions.datereturned,\n" .
-            "audittraktransactions.kittoolid,\n" .
-            "audittraktransactions.workorder\n" .
-            "FROM\n" .
-            "audittraktransactions\n" .
-            "WHERE\n" .
-            "audittraktransactions.custid = $custid AND\n" .
-            "audittraktransactions.userid = $userid AND\n" .
-            "audittraktransactions.tailid = $tailid";
+                "audittraktransactions.custid,\n" .
+                "audittraktransactions.type,\n" .
+                "audittraktransactions.datetimeissued,\n" .
+                "audittraktransactions.userid,\n" .
+                "audittraktransactions.tailid,\n" .
+                "audittraktransactions.lockerid,\n" .
+                "audittraktransactions.kitid,\n" .
+                "audittraktransactions.datereturned,\n" .
+                "audittraktransactions.kittoolid,\n" .
+                "audittraktransactions.workorder\n" .
+                "FROM\n" .
+                "audittraktransactions\n" .
+                "WHERE\n" .
+                "audittraktransactions.custid = $custid AND\n" .
+                "audittraktransactions.userid = $userid AND\n" .
+                "audittraktransactions.tailid = $tailid";
 
         if ($flag == KIT) {
             $sql = $sql . " AND audittraktransactions.kitid = $kitid";
@@ -260,63 +231,13 @@ class clstrak
                     // No , go on
                     return false;
                 }
-
             }
-
-
         } catch (PDOException $e) {
             return false;
-
-        }
-
-
-    }
-
-    public function isKiToolExist($custid, $code)
-    {
-
-        $sql = "SELECT\n" .
-            "kittools.id,\n" .
-            "kittools.kitid,\n" .
-            "kittools.toolid,\n" .
-            "kittools.custid,\n" .
-            "kittools.reserved,\n" .
-            "kittools.qrcode,\n" .
-            "kittools.`status`\n" .
-            "FROM\n" .
-            "kittools\n" .
-            "WHERE\n" .
-            "kittools.custid = $custid AND\n" .
-            "kittools.qrcode = $code";
-
-
-        $kittool = null;
-
-        try {
-            // Get DB object
-            $db = new db();
-            $db = $db->connect();
-            $stmt = $db->query($sql);
-            $kittool = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-            if ($kittool) {
-
-                return true;
-
-            } else {
-                return false;
-            }
-
-
-        } catch (PDOException $e) {
-            return false;
-
         }
     }
 
-
-    public function updateToolStatus($custid, $toolid, $status)
-    {
+    public function updateToolStatus($custid, $toolid, $status) {
 
         $sql = "UPDATE kittools SET  status = $status  WHERE id = $toolid AND custid = $custid";
 
@@ -332,16 +253,12 @@ class clstrak
             $stmt->execute();
             $db = null;
             // echo '{"notice": {"text": "Tool status updated"}';
-
         } catch (PDOException $e) {
             echo '{"error": {"text": ' . $e->getMessage() . '}';
-
         }
     }
 
-
-    public function updateToolReservedStatus($custid, $toolid, $status)
-    {
+    public function updateToolReservedStatus($custid, $toolid, $status) {
 
         $sql = "UPDATE kittools SET  reserved = $status  WHERE id = $toolid AND custid = $custid";
 
@@ -357,16 +274,12 @@ class clstrak
             $stmt->execute();
             $db = null;
             // echo '{"notice": {"text": "Tool reservation status updated"}';
-
         } catch (PDOException $e) {
             echo '{"error": {"text": ' . $e->getMessage() . '}';
-
         }
     }
 
-
-    public function updateKitReservedStatus($custid, $kitid, $status)
-    {
+    public function updateKitReservedStatus($custid, $kitid, $status) {
 
         $sql = "UPDATE kits SET  reserved = $status  WHERE id = $kitid AND custid = $custid";
 
@@ -382,15 +295,12 @@ class clstrak
             $stmt->execute();
             $db = null;
             // echo '{"notice": {"text": "Kit reservation  status updated"}';
-
         } catch (PDOException $e) {
             echo '{"error": {"text": ' . $e->getMessage() . '}';
-
         }
     }
 
-    public function updateKitStatus($custid, $kitid, $status)
-    {
+    public function updateKitStatus($custid, $kitid, $status) {
 
         //$status 0 - IN 1 - OUT
 
@@ -406,24 +316,19 @@ class clstrak
             $stmt->execute();
             $db = null;
             // echo '{"notice": {"text": "Kit status updated"}';
-
         } catch (PDOException $e) {
             echo '{"error": {"text": ' . $e->getMessage() . '}';
-
         }
-
     }
 
-
-    public function isKitReserved($custid, $kitid)
-    {
+    public function isKitReserved($custid, $kitid) {
 
         $sql = "SELECT *\n" .
-            "FROM\n" .
-            "reservations\n" .
-            "WHERE\n" .
-            "reservations.custid = $custid\n" .
-            "AND reservations.kitid = $kitid";
+                "FROM\n" .
+                "reservations\n" .
+                "WHERE\n" .
+                "reservations.custid = $custid\n" .
+                "AND reservations.kitid = $kitid";
 
         $reservations = null;
 
@@ -442,24 +347,19 @@ class clstrak
 
                 return false;
             }
-
-
         } catch (PDOException $e) {
             echo '{"error": {"Message": ' . $e->getMessage() . '}';
-
         }
-
     }
 
-    public function isToolReserved($custid, $toolid)
-    {
+    public function isToolReserved($custid, $toolid) {
 
         $sql = "SELECT *\n" .
-            "FROM\n" .
-            "reservations\n" .
-            "WHERE\n" .
-            "reservations.custid = $custid\n" .
-            "AND reservations.toolid = $toolid";
+                "FROM\n" .
+                "reservations\n" .
+                "WHERE\n" .
+                "reservations.custid = $custid\n" .
+                "AND reservations.toolid = $toolid";
 
         $reservations = null;
 
@@ -478,25 +378,19 @@ class clstrak
 
                 return false;
             }
-
-
         } catch (PDOException $e) {
             echo '{"error": {"Message": ' . $e->getMessage() . '}';
-
         }
-
     }
 
-
-    public function isTailTransaction($custid, $number)
-    {
+    public function isTailTransaction($custid, $number) {
 
         $sql = "SELECT *\n" .
-            "FROM\n" .
-            "auditraktransactions\n" .
-            "WHERE\n" .
-            "tailid = $number\n" .
-            "AND custid = $custid";
+                "FROM\n" .
+                "auditraktransactions\n" .
+                "WHERE\n" .
+                "tailid = $number\n" .
+                "AND custid = $custid";
 
         $tailtransactions = null;
 
@@ -515,17 +409,12 @@ class clstrak
 
                 return false;
             }
-
-
         } catch (PDOException $e) {
             echo '{"error": {"Message": ' . $e->getMessage() . '}';
-
         }
-
     }
 
-    public function DisableTail($custid, $number)
-    {
+    public function DisableTail($custid, $number) {
 
         //$status 0 - IN 1 - OUT
 
@@ -541,16 +430,12 @@ class clstrak
             $stmt->execute();
             $db = null;
             // echo '{"notice": {"text": "Tail disabled"}';
-
         } catch (PDOException $e) {
             echo '{"error": {"text": ' . $e->getMessage() . '}';
-
         }
-
     }
 
-    public function EnableTail($custid, $number)
-    {
+    public function EnableTail($custid, $number) {
 
         //$status 0 - IN 1 - OUT
 
@@ -566,77 +451,33 @@ class clstrak
             $stmt->execute();
             $db = null;
             // echo '{"notice": {"text": "Tail enabled"}';
-
         } catch (PDOException $e) {
             echo '{"error": {"text": ' . $e->getMessage() . '}';
-
-        }
-
-    }
-
-
-    public function isLocationExist($custid, $description)
-    {
-
-        $sql = "SELECT\n" .
-            "locations.id,\n" .
-            "loctions.description,\n" .
-            "locations.custid\n" .
-            "FROM\n" .
-            "locations\n" .
-            "WHERE\n" .
-            "locations.custid = $custid AND\n" .
-            "locations.description = $description";
-
-
-        $locations = null;
-
-        try {
-            // Get DB object
-            $db = new db();
-            $db = $db->connect();
-            $stmt = $db->query($sql);
-            $locations = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-            if ($locations) {
-
-                return true;
-
-            } else {
-                return false;
-            }
-
-
-        } catch (PDOException $e) {
-            return false;
-
         }
     }
 
-
-    public function isKitComplete($custid, $kitid)
-    {
+    public function isKitComplete($custid, $kitid) {
 
         $sql = "SELECT\n" .
-            "kits.id,\n" .
-            "kits.count,\n" .
-            "FROM\n" .
-            "kits\n" .
-            "WHERE\n" .
-            "kits.custid = $custid AND\n" .
-            "kits.id = $kitid";
+                "kits.id,\n" .
+                "kits.count,\n" .
+                "FROM\n" .
+                "kits\n" .
+                "WHERE\n" .
+                "kits.custid = $custid AND\n" .
+                "kits.id = $kitid";
 
         $sql_tool = "SELECT\n" .
-            "kittools.id,\n" .
-            "kittoolss.status,\n" .
-            "kittoolss.custid,\n" .
-            "kittoolss.kitid,\n" .
-            "FROM\n" .
-            "kittools\n" .
-            "WHERE\n" .
-            "kittools.custid = $custid AND\n" .
-            "kittools.kitid = $kitid AND\n" .
-            "kittools.status = 1";
+                "kittools.id,\n" .
+                "kittoolss.status,\n" .
+                "kittoolss.custid,\n" .
+                "kittoolss.kitid,\n" .
+                "FROM\n" .
+                "kittools\n" .
+                "WHERE\n" .
+                "kittools.custid = $custid AND\n" .
+                "kittools.kitid = $kitid AND\n" .
+                "kittools.status = 1";
 
         $kits = null;
         $kittools = null;
@@ -675,12 +516,57 @@ class clstrak
 
                 return false;
             }
-
-
         } catch (PDOException $e) {
             return false;
-
         }
+    }
+
+    public function photoUpload() { 
+            
+            $uploadOk = 1;
+            $msg = "";
+            $target_dir = getcwd() . "/uploads/";
+            $temp = explode(".", $_FILES["photo"]["name"]);
+            $newfilename = round(microtime(true)) . '.' . end($temp);
+            $target_file = $target_dir . $newfilename;
+
+
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+            $check = getimagesize($_FILES['photo']["tmp_name"]);
+            if ($check === true) {
+                $msg += "File is not an image. ";
+                $uploadOk = 0;
+            }
+
+//    // Check if file already exists
+//    if (file_exists($target_file)) {
+//        $msg += " Sorry, file already exists. ";
+//        $uploadOk = 0;
+//    }
+            // Check file size
+            if ($_FILES['photo']["size"] > 500000) {
+                $msg += " Sorry, your file is too large. ";
+                $uploadOk = 0;
+            }
+
+            // Allow certain file formats
+            if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
+                $msg += " Sorry, only JPG, JPEG & PNG files are allowed. ";
+                $uploadOk = 0;
+            }
+            // Check if $uploadOk is set to 0 by an error
+             
+            if ($uploadOk == 0) {
+                $msg += " Sorry, your file was not uploaded. ";
+                // if everything is ok, try to upload file
+            } else {
+                if (!move_uploaded_file($_FILES['photo']["tmp_name"], $target_file)) {
+                    $msg += " Sorry, there was an error uploading your file. ";
+                }
+            }
+            return $uploadOk;
+        
     }
 
 }
