@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Henchman Products PTY.  Standard Copyright and Disclaimer Notice:
  *
@@ -16,18 +17,13 @@
  * ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED "AS IS".HENCHMAN
  *  HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
-
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 
-
 //Issuance
-
 // {flag can be 1 for KIT or 0 for TOOL}
 
-   $app->post('/api/transaction/issue/{custid}/{userid}/{flag}', function(Request $request, Response $response) {
-//$app->post('/api/transaction/issue/{custid}', function(Request $request, Response $response) {
-
+$app->post('/api/transaction/issue/{custid}/{userid}/{flag}', function(Request $request, Response $response) {
     $custid = $request->getAttribute('custid');
     $userid = $request->getAttribute('userid');
     $flag = $request->getAttribute('flag');
@@ -42,29 +38,30 @@ use \Slim\Http\Response as Response;
 
     $trk = new clstrak();
 
-       if($flag == KIT) {
-           if($trk->isKitReserved($custid,$kitid)) {
-               echo '{"warning": {"Message": "Kit is reserved"}';
-               exit(0);
-           };
+    if ($flag == KIT) {
+        if ($trk->isKitReserved($custid, $kitid)) {
 
-       }else{
-           if($trk->isToolReserved($custid,$kittoolid)) {
-               echo '{"warning": {"Message": "Tool is reserved"}';
-               exit(0);
-           };
-       };
+            echo '{"success": false,"error_message": "Kit is reserved" , "code": 202 }';
+            exit(0);
+        }
+    } else {
+        if ($trk->isToolReserved($custid, $kittoolid)) {
+            echo '{"success": false,"error_message": "Tool is reserved" , "code": 202 }';
+            exit(0);
+        };
+    }
 
-    if($trk->isTransactionExist($custid,$userid,$tailid,$kitid,$kittoolid,$flag))
-    {
-        echo '{"warning": {"Message": "Transaction already exist"}';
-    }else {
+    if ($trk->isTransactionExist($custid, $userid, $tailid, $kitid, $kittoolid, $flag)) {
+
+        echo '{"success": false,"error_message": "Transaction already exist" , "code": 202 }';
+    } else {
 
         $sql = "INSERT INTO audittraktransactions (custid, type, datetimeissued,userid, tailid,lockerid,kitid,datereturned, kittoolid,workorder,flag) VALUES 
             (:custid, :type, :datetimeissued,:userid, :tailid,:lockerid,:kitid, :datereturned, :kittoolid,:workorder, :flag)";
-        try{
+
+        try {
             // Get DB object
-            $db= new db();
+            $db = new db();
             $db = $db->connect();
             $stmt = $db->prepare($sql);
 
@@ -82,35 +79,28 @@ use \Slim\Http\Response as Response;
 
 
             $stmt->execute();
+
             $db = null;
 
-            if($flag == KIT) {
-                $trk->updateKitStatus($custid,$kitid, OUT);
-            }else{
-                $trk->updateToolStatus($custid,$kittoolid, OUT);
-            };
+            if ($flag == KIT) {
+                $trk->updateKitStatus($custid, $kitid, OUT);
+            } else {
+                $trk->updateToolStatus($custid, $kittoolid, OUT);
+            }
 
             // Inform
-
-            echo '{"notice": {"text": "Issue successful"}';
-
-        }catch(PDOException $e){
-            echo '{"error": {"text": '.$e->getMessage().'}';
-
+            echo '{"success": true,"error_message": null, "result":"Issue successful.", "code": 200 }';
+        } catch (PDOException $e) {
+            echo '{"error": {"text": ' . $e->getMessage() . '}';
         }
-
     }
-
-
 });
 
-
-//Return
 
 // {flag can be 1 for KIT or 0 for TOOL}
 
 $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request $request, Response $response) {
-//$app->post('/api/transaction/issue/{custid}', function(Request $request, Response $response) {
+
 
     $custid = $request->getAttribute('custid');
     $userid = $request->getAttribute('userid');
@@ -125,15 +115,15 @@ $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request 
 
     $trk = new clstrak();
 
-    if($trk->isTransactionExist($custid,$userid,$tailid,$kitid,$kittoolid,$flag)) {
+    if ($trk->isTransactionExist($custid, $userid, $tailid, $kitid, $kittoolid, $flag)) {
 
         $sql = "UPDATE audittraktransactions SET type = $type, datereturned = '$datetimereturned' WHERE custid = $custid AND userid = $userid AND type = 1 AND tailid = $tailid AND lockerid = $lockerid AND  workorder = '$workorder'";
 
-        echo $sql;
-        if($flag == KIT) {
-            $sql = $sql. " AND kitid = $kitid";
-        }else{
-            $sql = $sql. " AND kittoolid = $kittoolid";
+
+        if ($flag == KIT) {
+            $sql = $sql . " AND kitid = $kitid";
+        } else {
+            $sql = $sql . " AND kittoolid = $kittoolid";
         }
 
         try {
@@ -151,19 +141,16 @@ $app->post('/api/transaction/return/{custid}/{userid}/{flag}', function(Request 
                 $trk->updateToolStatus($custid, $kittoolid, IN);
             }
 
-            echo '{"notice": {"text": "Return successful"}';
 
+            echo '{"success": true,"error_message": null, "result":"Success", "code": 200 }';
         } catch (PDOException $e) {
-            echo '{"error": {"text": ' . $e->getMessage() . '}';
-
+            echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
         }
     } else {
 
-        echo '{"warning": {"Message": "Return failed"}';
 
+        echo '{"success": false,"error_message": "UnSuccessful" , "code": 202 }';
     }
-
-
 });
 
 
@@ -177,21 +164,21 @@ $app->get('/api/transaction/kit/issued/user/count/{custid}/{userid}', function(R
     $kittransactions = null;
 
     // Select statement
-    $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 1 AND flag = 1";
+    $sql = "SELECT DISTINCT * FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 1 AND flag = 1";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         $numrows = $stmt->rowCount();
-        echo '{"Kit issued": {"Total": '.json_encode($numrows).'}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
+        echo '{"success": true,"error_message": null, "result":' . json_encode($numrows) . ', "code": 200 }';
+    } catch (PDOException $e) {
 
+        echo '{"success": false,"error_message": "No Kits/Tools issued." , "code": 202 }';
     }
 });
 
@@ -207,19 +194,18 @@ $app->get('/api/transaction/kit/returned/user/count/{custid}/{userid}', function
     // Select statement
     $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 0 AND flag = 1";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         $numrows = $stmt->rowCount();
-        echo '{"Kit returned": {"Total": '.json_encode($numrows).'}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+        echo '{"success": true,"error_message": null, "result":' . json_encode($numrows) . ', "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -235,19 +221,18 @@ $app->get('/api/transaction/tool/issued/user/count/{custid}/{userid}', function(
     // Select statement
     $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 1 AND flag = 0";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         $numrows = $stmt->rowCount();
-        echo '{"Tool issued": {"Total": '.json_encode($numrows).'}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+        echo '{"success": true,"error_message": null, "result":' . json_encode($numrows) . ', "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -263,19 +248,18 @@ $app->get('/api/transaction/tool/returned/user/count/{custid}/{userid}', functio
     // Select statement
     $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 0 AND flag = 0";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         $numrows = $stmt->rowCount();
-        echo '{"Tool returned": {"Total": '.json_encode($numrows).'}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+        echo '{"success": true,"error_message": null, "result":' . json_encode($numrows) . ', "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -288,31 +272,186 @@ $app->get('/api/transaction/list/issued/{custid}', function(Request $request, Re
     $kittransactions = null;
 
     // Select statement
-    $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND type = 1";
+//    $sql = "SELECT DISTINCT * FROM audittraktransactions WHERE  custid = $custid AND type = 1";
 
-    try{
+    
+     $sql = "SELECT\n" .
+            "audittraktransactions.id,\n" .
+            "audittraktransactions.custid,\n" .
+            "audittraktransactions.type,\n" .
+             "audittraktransactions.datetimeissued,\n" .
+             
+             "audittraktransactions.tailid,\n" .
+             "audittraktransactions.lockerid,\n" .
+            "audittraktransactions.kitid,\n" .
+            "audittraktransactions.datereturned,\n" .
+             "audittraktransactions.kittoolid,\n" .
+             "audittraktransactions.workorder,\n" .
+             "audittraktransactions.flag,\n" .
+            
+       	    "users.id as userid,\n".
+            "users.active,\n" .
+            "users.kabtrak,\n" .
+            "users.portatrak,\n" .
+            "users.cribtrak,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.level,\n" . 
+
+
+	    "employees.id,\n".
+            "employees.	firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" . 
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "employees.mobilenumber,\n" . 
+            "employees.createddate,\n" . 
+
+		
+             
+            "tails.number,\n" .
+            "tails.description as tailName, \n" .
+             "tails.active,\n" .
+             
+             "lockers.description as lockerName,\n" .
+            "lockers.code, \n" .
+             "lockers.active, \n" .
+             
+             
+            "kits.description as kitName, \n" .
+            "kits.reserved,\n" .
+            "kits.qrcode, \n" .
+            "kits.status, \n" .
+
+	    "locations.id, \n" .
+	     "locations.description as locationName\n" .  
+             
+            "FROM\n" .
+            "audittraktransactions\n" .
+            "LEFT JOIN users ON users.id = audittraktransactions.userid \n" .
+            "LEFT JOIN tails ON tails.id = audittraktransactions.tailid \n" .
+            "LEFT JOIN lockers ON lockers.id = audittraktransactions.lockerid \n" .
+            "LEFT JOIN kits ON kits.id = audittraktransactions.kitid \n" .
+	    "LEFT JOIN employees ON employees.id = audittraktransactions.userid \n" .
+	    "LEFT JOIN locations ON audittraktransactions.kitid = kits.id AND  kits.kitlocation =  locations.id \n" .
+             
+            "WHERE\n" .
+            "audittraktransactions.custid = $custid AND TYPE=1";
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kittransactions) {
-            echo  '{"Out kit/tools": '. json_encode($kittransactions). '}';
+        if ($kittransactions) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($kittransactions) . ', "code": 200 }';
             $employees = null;
             $db = null;
         } else {
-            echo '{"error":"No issuance transactions found.")';
+
+            echo '{"success": false,"error_message": "NO kits/tools found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
+// count Issued kit/tools list per customer
 
+$app->get('/api/transaction/list/issuedcount/{custid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+
+    $kittransactions = null;
+
+    // Select statement
+    $sql = "SELECT\n" .
+            "audittraktransactions.id,\n" .
+            "audittraktransactions.custid,\n" .
+            "audittraktransactions.type,\n" .
+             "audittraktransactions.datetimeissued,\n" .
+             
+             "audittraktransactions.tailid,\n" .
+             "audittraktransactions.lockerid,\n" .
+            "audittraktransactions.kitid,\n" .
+            "audittraktransactions.datereturned,\n" .
+             "audittraktransactions.kittoolid,\n" .
+             "audittraktransactions.workorder,\n" .
+             "audittraktransactions.flag,\n" .
+            
+       	    "users.id as userid,\n".
+            "users.active,\n" .
+            "users.kabtrak,\n" .
+            "users.portatrak,\n" .
+            "users.cribtrak,\n" .
+            "users.auditrak,\n" .
+            "users.role,\n" .
+            "users.level,\n" . 
+
+
+	    "employees.id,\n".
+            "employees.	firstname,\n" .
+            "employees.lastname,\n" .
+            "employees.username,\n" . 
+            "employees.email,\n" .
+            "employees.photo,\n" .
+            "employees.mobilenumber,\n" . 
+            "employees.createddate,\n" . 
+
+		
+             
+            "tails.number,\n" .
+            "tails.description as tailName, \n" .
+             "tails.active,\n" .
+             
+             "lockers.description as lockerName,\n" .
+            "lockers.code, \n" .
+             "lockers.active, \n" .
+             
+             
+            "kits.description as kitName, \n" .
+            "kits.reserved,\n" .
+            "kits.qrcode, \n" .
+            "kits.status, \n" .
+
+	    "locations.id, \n" .
+	     "locations.description as locationName\n" .  
+             
+            "FROM\n" .
+            "audittraktransactions\n" .
+            "LEFT JOIN users ON users.id = audittraktransactions.userid \n" .
+            "LEFT JOIN tails ON tails.id = audittraktransactions.tailid \n" .
+            "LEFT JOIN lockers ON lockers.id = audittraktransactions.lockerid \n" .
+            "LEFT JOIN kits ON kits.id = audittraktransactions.kitid \n" .
+	    "LEFT JOIN employees ON audittraktransactions.userid  = users.userid = employees.id \n" .
+	    "LEFT JOIN locations ON audittraktransactions.kitid = kits.id AND  kits.kitlocation =  locations.id \n" .
+             
+            "WHERE\n" .
+            "audittraktransactions.custid = $custid AND TYPE=1";
+
+    try {
+        // Get DB object
+        $db = new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $kittransactionsno = $stmt->rowCount();
+        if ($kittransactionsno) {
+             
+            echo '{"success": true,"error_message": null, "result":' .$kittransactionsno. ', "code": 200 }';
+            $employees = null;
+            $db = null;
+        } else {
+
+            echo '{"success": false,"error_message": "NO kits/tools found." , "code": 202 }';
+        }
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
+    }
+});
 
 // Returned kit/tools list per customer
 
@@ -325,25 +464,24 @@ $app->get('/api/transaction/list/returned/{custid}', function(Request $request, 
     // Select statement
     $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND type = 0";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kittransactions) {
-            echo  '{"Returned kit/tools": '. json_encode($kittransactions). '}';
+        if ($kittransactions) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($kittransactions) . ', "code": 200 }';
             $employees = null;
             $db = null;
         } else {
-            echo '{"error":"No return transactions found.")';
+
+            echo '{"success": false,"error_message": "No return transactions found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -359,25 +497,25 @@ $app->get('/api/transaction/list/user/issued/{custid}/{userid}', function(Reques
     // Select statement
     $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 1";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kittransactions) {
-            echo  '{"Out kit/tools": '. json_encode($kittransactions). '}';
+        if ($kittransactions) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($kittransactions) . ', "code": 200 }';
+
             $employees = null;
             $db = null;
         } else {
-            echo '{"error":"No issuance transactions found.")';
+
+            echo '{"success": false,"error_message": "No issuance transactions found.." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -393,25 +531,24 @@ $app->get('/api/transaction/list/user/returned/{custid}/{userid}', function(Requ
     // Select statement
     $sql = "SELECT DISTINCT* FROM audittraktransactions WHERE  custid = $custid AND userid = $userid AND type = 0";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $kittransactions = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kittransactions) {
-            echo  '{"Returned kit/tools": '. json_encode($kittransactions). '}';
+        if ($kittransactions) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($kittransactions) . ', "code": 200 }';
+
             $employees = null;
             $db = null;
         } else {
-            echo '{"error":"No returned transactions found.")';
+            echo '{"success": false,"error_message": "No returned transactions found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -423,7 +560,7 @@ $app->post('/api/transaction/reservation/kit/add/{custid}/{userid}/{kitid}', fun
     $custid = $request->getAttribute('custid');
     $userid = $request->getAttribute('userid');
     $kitid = $request->getAttribute('kitid');
-    $reservationdate  = date("Y-m-d");
+    $reservationdate = date("Y-m-d");
     $reservationtime = date("h:i:sa");
 
     $flag = 0;
@@ -434,9 +571,9 @@ $app->post('/api/transaction/reservation/kit/add/{custid}/{userid}/{kitid}', fun
     // $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :
     $sql = "INSERT INTO reservations (reservationdate, reservationtime, custid, userid,kitid,flag) VALUES (:reservationdate, :reservationtime, :custid, :userid,:kitid,:flag)";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -454,13 +591,13 @@ $app->post('/api/transaction/reservation/kit/add/{custid}/{userid}/{kitid}', fun
         //update tool reserved tah here
         $trk = new clstrak();
 
-        $trk->updateKitReservedStatus($custid,$kitid,1);
+        $trk->updateKitReservedStatus($custid, $kitid, 1);
 
-        echo '{"notice": {"Message": "KIT Reservation Added"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
+        echo '{"success": true,"error_message": null, "result":"KIT Reservation Added.", "code": 200 }';
+    } catch (PDOException $e) {
 
+        echo '{"success": false,"error_message": "Kit Not reserved." , "code": 202 }';
     }
 });
 
@@ -481,9 +618,9 @@ $app->delete('/api/transaction/reservation/kit/delete/{custid}/{userid}/{kitid}'
     // $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :
     $sql = "DELETE FROM reservations WHERE custid = $custid AND userid= $userid AND kitid = $kitid AND flag = 0";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -494,13 +631,12 @@ $app->delete('/api/transaction/reservation/kit/delete/{custid}/{userid}/{kitid}'
         //update tool reserved tah here
         $trk = new clstrak();
 
-        $trk->updateKitReservedStatus($custid,$toolid,0);
+        $trk->updateKitReservedStatus($custid, $toolid, 0);
 
-        echo '{"notice": {"Message": "KIT Reservation removed"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
-
+        echo '{"success": true,"error_message": null, "result":"KIT Reservation removed.", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -512,7 +648,7 @@ $app->post('/api/transaction/reservation/tool/add/{custid}/{userid}/{toolid}', f
     $custid = $request->getAttribute('custid');
     $userid = $request->getAttribute('userid');
     $toolid = $request->getAttribute('toolid');
-    $reservationdate  = date("Y-m-d");
+    $reservationdate = date("Y-m-d");
     $reservationtime = date("h:i:sa");
     $flag = 0;
 
@@ -522,9 +658,9 @@ $app->post('/api/transaction/reservation/tool/add/{custid}/{userid}/{toolid}', f
     // $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :
     $sql = "INSERT INTO reservations (reservationdate, reservationtime, custid, userid,toolid,flag) VALUES (:reservationdate, :reservationtime, :custid, :userid,:toolid,:flag)";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -542,13 +678,13 @@ $app->post('/api/transaction/reservation/tool/add/{custid}/{userid}/{toolid}', f
         //update tool reserved tah here
         $trk = new clstrak();
 
-        $trk->updateToolReservedStatus($custid,$toolid,1);
+        $trk->updateToolReservedStatus($custid, $toolid, 1);
 
-        echo '{"notice": {"Message": "TOOL Reservation Added"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
+        echo '{"success": true,"error_message": null, "result":"TOOL Reservation Added.", "code": 200 }';
+    } catch (PDOException $e) {
 
+        echo '{"success": false,"error_message": "Tool Not reserved." , "code": 202 }';
     }
 });
 
@@ -569,9 +705,9 @@ $app->delete('/api/transaction/reservation/tool/delete/{custid}/{userid}/{toolid
     // $sql = "INSERT INTO users (custid,active,auditrak,role,userid,level) VALUES (:custid,:active, :auditrak, :role, :userid, :
     $sql = "DELETE FROM reservations WHERE custid = $custid AND userid= $userid AND toolid = $toolid AND flag = 0";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -582,13 +718,12 @@ $app->delete('/api/transaction/reservation/tool/delete/{custid}/{userid}/{toolid
         //update tool reserved tah here
         $trk = new clstrak();
 
-        $trk->updateToolReservedStatus($custid,$toolid,0);
+        $trk->updateToolReservedStatus($custid, $toolid, 0);
 
-        echo '{"notice": {"Message": "TOOL Reservation removed"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
-
+        echo '{"success": true,"error_message": null, "result":"TOOL Reservation removed."", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -602,54 +737,55 @@ $app->get('/api/transaction/tools/list/{custid}', function(Request $request, Res
 
     // Select statement
 
-     $sql=  "SELECT\n".
-            "kittools.toolid,\n".
-            "tools.description AS ToolName,\n".
-            "tools.serialno,\n".
-            "tools.categoryid,\n".
-            "tools.toolimage,\n".
-            "kittools.`status`,\n".
-            "kittools.qrcode,\n".
-            "kittools.reserved,\n".
-            "kittools.custid,\n".
-            "kittools.kitid,\n".
-            "kits.description AS kitdescription,\n".
-            "kits.lockerid,\n".
-            "toolcategories.description AS ToolCategory\n".
-            "FROM\n".
-            "kittools\n".
-            "LEFT JOIN tools ON tools.id = kittools.toolid\n".
-            "LEFT JOIN kits ON kits.id = kittools.kitid\n".
-            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
-            "WHERE\n".
-            "kittools.`status` IS NOT NULL AND\n".
-            "kittools.`status` <> 1 AND\n".
-            "kittools.reserved <> 1 AND\n".
+    $sql = "SELECT\n" .
+            "kittools.toolid,\n" .
+            "tools.description AS ToolName,\n" .
+            "tools.serialno,\n" .
+            "tools.categoryid,\n" .
+            "tools.toolimage,\n" .
+            "kittools.`status`,\n" .
+            "kittools.qrcode,\n" .
+            "kittools.reserved,\n" .
+            "kittools.custid,\n" .
+            "kittools.kitid,\n" .
+            "kits.description AS kitName,\n" .
+            "kits.lockerid,\n" .
+            "toolcategories.description AS ToolCategoryName \n" .
+            "FROM\n" .
+            "kittools\n" .
+            "LEFT JOIN tools ON tools.id = kittools.toolid\n" .
+            "LEFT JOIN kits ON kits.id = kittools.kitid\n" .
+            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n" .
+            "WHERE\n" .
+            "kittools.`status` IS NOT NULL AND\n" .
+            "kittools.`status` <> 1 AND\n" .
+            "kittools.reserved <> 1 AND\n" .
             "kittools.custid = $custid";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
         $tools = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($tools) {
-            echo  '{"Available Tools": '. json_encode($tools). '}';
+        if ($tools) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($tools) . ', "code": 200 }';
+
             $tools = null;
             $db = null;
         } else {
-            echo '{"error":"No tools found.")';
+
+            echo '{"success": false,"error_message": "No tools found." , "code": 202 }';
         }
+    } catch (PDOException $e) {
 
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+        echo '{"success": false,"error_message": "No tools found."" , "code": 202 }';
     }
 });
 
-// Load kit list for user selection. Kits that are issued or reserved or tool incomplete will not be shown from the list
+// Load kit list for user selection. Kits that are issued or reserved will not be shown from the list
 
 $app->get('/api/transaction/kits/list/{custid}', function(Request $request, Response $response) {
 
@@ -684,18 +820,18 @@ $app->get('/api/transaction/kits/list/{custid}', function(Request $request, Resp
         $stmt = $db->query($sql);
         $kits = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($kits) {
-            echo  '{"Available kits": '. json_encode($kits). '}';
+        if($kits) { 
+            echo '{"success": true,"error_message": null, "result":'. json_encode($kits). ', "code": 200 }';
             $tools = null;
             $kittools = null;
             $db = null;
-        } else {
-            echo '{"error":"No kits found.")';
+        } else { 
+            echo '{"success": false,"error_message": "No kits found." , "code": 202 }';
         }
 
 
     }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
+        echo '{"success": false,"error_message": "'.$e->getMessage().'" , "code": 202 }';
 
     }
 });
@@ -709,34 +845,34 @@ $app->get('/api/transaction/tails/list/{custid}', function(Request $request, Res
     $tails = null;
 
     // Select statement
-    $sql = "SELECT DISTINCT\n".
-        "tails.id,\n".
-        "tails.number,\n".
-        "tails.description\n".
-        "FROM tails\n".
-        "WHERE custid = $custid AND \n".
-        "active = 1";
+    $sql = "SELECT DISTINCT\n" .
+            "tails.id,\n" .
+            "tails.number,\n" .
+            "tails.description AS tailsName\n" .
+            "FROM tails\n" .
+            "WHERE custid = $custid AND \n" .
+            "active = 1";
 
 
-     try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->query($sql);
-         $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $tails = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if($tails) {
-            echo  '{"Active Tails": '. json_encode($tails). '}';
+        if ($tails) {
+
+            echo '{"success": true,"error_message": null, "result":' . json_encode($tails) . ', "code": 200 }';
+
             $tools = null;
             $db = null;
         } else {
-            echo '{"error":"No tails found.")';
+
+            echo '{"success": false,"error_message": "No tails found." , "code": 202 }';
         }
-
-
-    }catch(PDOException $e){
-        echo '{"error": {"Message": '.$e->getMessage().'}';
-
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
 
@@ -754,9 +890,9 @@ $app->post('/api/log/add/{custid}', function(Request $request, Response $respons
     // Select statement
     $sql = "INSERT INTO log (description, logdate, custid) VALUES (:description, :logdate, :custid)";
 
-    try{
+    try {
         // Get DB object
-        $db= new db();
+        $db = new db();
         $db = $db->connect();
         $stmt = $db->prepare($sql);
 
@@ -769,13 +905,14 @@ $app->post('/api/log/add/{custid}', function(Request $request, Response $respons
         $db = null;
 
 
-        echo '{"notice": {"Message": "Log entry Added"}';
 
-    }catch(PDOException $e){
-        echo '{"error": {"text": '.$e->getMessage().'}';
-
+        echo '{"success": true,"error_message": null, "result":"Log entry Added", "code": 200 }';
+    } catch (PDOException $e) {
+        echo '{"success": false,"error_message": "' . $e->getMessage() . '" , "code": 202 }';
     }
 });
+
+
 
 // Check kit completeness
 
@@ -787,20 +924,60 @@ $app->get('/api/transaction/kit/complete/{custid}/{kitid}', function(Request $re
     $trk = new clstrak();
 
     if($trk->isKitComplete($custid,$kitid)) {
-
-        echo  '{"kit": complete}';
-
-    }else{
-
-        echo  '{"kit": incomplete}';
+        echo '{"success": true,"error_message": null, "result":"Kit complete", "code": 200 }';         
+    }else{        
+        echo '{"success": false,"error_message": "Kit incomplete" , "code": 202 }';
     }
 
 
 });
 
+// Load tool list per kit will not be shown from the list
+$app->get('/api/transaction/kit/tools/list/{custid}/{kitid}', function(Request $request, Response $response) {
+    $custid = $request->getAttribute('custid');
+    $kitid = $request->getAttribute('kitid');
+    $tools = null;
+    // Select statement
+     $sql=  "SELECT\n".
+            "kittools.toolid,\n".
+            "tools.description AS ToolName,\n".
+            "tools.serialno,\n".
+            "tools.categoryid,\n".
+            "tools.toolimage,\n".
+            "kittools.`status`,\n".
+            "kittools.qrcode,\n".
+            "kittools.reserved,\n".
+            "kittools.custid,\n".
+            "kittools.kitid,\n".
+            "kits.description AS kitdescription,\n".
+            "kits.lockerid,\n".
+            "toolcategories.description AS ToolCategory\n".
+            "FROM\n".
+            "kittools\n".
+            "LEFT JOIN tools ON tools.id = kittools.toolid\n".
+            "LEFT JOIN kits ON kits.id = kittools.kitid\n".
+            "LEFT JOIN toolcategories ON toolcategories.id = tools.categoryid\n".
+            "WHERE\n".
+            "kittools.kitid = $kitid";
+    try{
+        // Get DB object
+        $db= new db();
+        $db = $db->connect();
+        $stmt = $db->query($sql);
+        $tools = $stmt->fetchAll(PDO::FETCH_OBJ);
+        if($tools) { 
+            echo '{"success": true,"error_message": null, "result":'. json_encode($tools). ', "code": 200 }';
 
-
-
+            $tools = null;
+            $db = null;
+        } else {
+            echo '{"success": false,"error_message": "No tools found." , "code": 202 }';
+             
+        }
+    }catch(PDOException $e){
+        echo '{"success": false,"error_message": "'.$e->getMessage().'" , "code": 202 }';
+    }
+});
 
 
 
