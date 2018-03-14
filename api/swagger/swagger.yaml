@@ -1,0 +1,66 @@
+swagger: "2.0"
+info:
+  termsOfServive: http://webportal.henchmantrak.com/terms/
+  contact:
+    name: API Support
+    url: http://webportal.henchmantrak.com/support
+    email: artolentino@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+# during dev, should point to your local machine
+host: localhost
+# basePath prefixes all resource paths 
+basePath: /auditrakapi
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: HTTP Basic Authentication.
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+  - text/html
+paths:
+  /public/api/user/login:
+   get:
+    description: Authenticate User
+    summary: Summary Here
+    operatioId: loginUser
+    produces:
+    - application/json
+    - text/html
+
+    security:
+     - basicAuth: []
+    operationId: Login user
+    parameters:
+     - name: username
+       in: formData
+       description: Username
+       required: true
+       type : string
+     - name: password
+       in: formData
+       description: password
+       required: true
+       type : string
+    responses:
+      '200':
+      description: User Data
+      content:
+        application/json:
+          schema:
+          $ref: '#/success.json'
+      
+     
+
+
+

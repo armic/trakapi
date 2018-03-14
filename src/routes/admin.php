@@ -31,7 +31,17 @@ use \Slim\Http\Response as Response;
  * Employee Paths
  */
 
+// Get CUstomer List
+//
+//
+
+$app->get('/api/admin/customers/list', function(Request $request, Response $response) {
+
+});
+
 // Get employee list
+
+
 
 $app->get('/api/admin/employees/{custid}', function(Request $request, Response $response) {
 
@@ -224,7 +234,7 @@ $app->post('/api/admin/employee/add/{custid}', function(Request $request, Respon
 
     }else {
 
-        $sql = "INSERT INTO employees (firstname, lastname, email,mobilenumber, custid,createddate,username,password) VALUES 
+        $sql = "INSERT INTO employees (firstname, lastname, email,mobilenumber, custid,createddate,username,password) VALUES
             (:firstname, :lastname,:email, :mobilenumber,  :custid, :createddate, :username, :password)";
         try{
             // Get DB object
@@ -363,7 +373,7 @@ $app->post('/api/admin/tail/add/{custid}', function(Request $request, Response $
 
     }else {
 
-        $sql = "INSERT INTO tails (custid, number, description,createddate) VALUES 
+        $sql = "INSERT INTO tails (custid, number, description,createddate) VALUES
             (:custid, :number,:description, :createddate)";
         try{
             // Get DB object
@@ -404,7 +414,7 @@ $app->put('/api/admin/tail/update/{number}/{custid}', function(Request $request,
 
     $sql = "UPDATE tails SET
                    description = :description
-                  
+
              WHERE number = '$number' AND custid = $custid";
 
     try{
@@ -610,13 +620,13 @@ $app->get('/api/admin/user/{userid}', function(Request $request, Response $respo
 
 // Update user record
 
-$app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request, Response $response) {
+$app->put('/api/admin/user/update/{userid}/{custid}/{level}/{role}', function(Request $request, Response $response) {
 
     $userid = $request->getAttribute('userid');
     $custid = $request->getAttribute('custid');
 
-    $role = $request->getParam('role');
-    $level = $request->getParam('level');
+    $role = $request->getAttribute('role');
+    $level = $request->getAttribute('level');
 
 
 
@@ -624,7 +634,7 @@ $app->put('/api/admin/user/update/{userid}/{custid}', function(Request $request,
                    role = :role,
                    level = :level
              WHERE userid = $userid AND custid = $custid AND auditrak= 1";
-    echo $sql;
+    //echo $sql;
     try{
         // Get DB object
         $db= new db();
@@ -910,7 +920,7 @@ $app->post('/api/admin/locker/add/{custid}', function(Request $request, Response
 
 
 
-        $sql = "INSERT INTO lockers (custid, description, code,locationid, active) VALUES 
+        $sql = "INSERT INTO lockers (custid, description, code,locationid, active) VALUES
             (:custid, :description,:code, :locationid, :active)";
         try{
             // Get DB object
@@ -1114,7 +1124,7 @@ $app->post('/api/admin/kit/add/{custid}', function(Request $request, Response $r
 
 
 
-    $sql = "INSERT INTO kits (custid, description, lockerid,qrcode, reserved,status) VALUES 
+    $sql = "INSERT INTO kits (custid, description, lockerid,qrcode, reserved,status) VALUES
             (:custid, :description,:lockerid, :qrcode, 0, 0)";
     try{
         // Get DB object
@@ -1260,7 +1270,7 @@ $app->post('/api/admin/kittool/add/{custid}', function(Request $request, Respons
     }else {
 
 
-        $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES 
+        $sql = "INSERT INTO kittools (kitid, toolid,custid,reserved,qrcode,status) VALUES
             (:kitid, :toolid,:custid, 0, :qrcode, 0)";
         try {
             // Get DB object
@@ -1400,7 +1410,7 @@ $app->post('/api/admin/tool/add/{custid}', function(Request $request, Response $
 
 
 
-    $sql = "INSERT INTO tools (custid,stockcode,description,serialno,categoryid,toolimage) VALUES 
+    $sql = "INSERT INTO tools (custid,stockcode,description,serialno,categoryid,toolimage) VALUES
             (:custid,:stockcode,:description,:serialno,:categoryid,:toolimage)";
     try{
         // Get DB object
@@ -1512,7 +1522,7 @@ $app->post('/api/admin/toolcategory/add/{custid}', function(Request $request, Re
 
 
 
-    $sql = "INSERT INTO toolcategories (custid,description) VALUES 
+    $sql = "INSERT INTO toolcategories (custid,description) VALUES
             (:custid,:description)";
     try{
         // Get DB object
@@ -1619,7 +1629,7 @@ $app->post('/api/admin/location/add/{custid}', function(Request $request, Respon
 
 
 
-    $sql = "INSERT INTO locations (custid,description) VALUES 
+    $sql = "INSERT INTO locations (custid,description) VALUES
             (:custid,:description)";
 
     $trk = new clstrak();
@@ -1654,7 +1664,7 @@ $app->post('/api/admin/location/add/{custid}', function(Request $request, Respon
 
 //Update User role 1 - Administrator 0 - User
 
-$app->put('/api/admin/user/update/role/{custid}/{userid}/{role}', function(Request $request, Response $response) {
+$app->post('/api/admin/user/update/role/{custid}/{userid}/{role}', function(Request $request, Response $response) {
 
     $userid = $request->getAttribute('userid');
     $custid = $request->getAttribute('custid');
@@ -1698,6 +1708,49 @@ $app->put('/api/admin/user/update/role/{custid}/{userid}/{role}', function(Reque
 
 });
 
+
+//Update User Level
+
+$app->post('/api/admin/user/update/level/{custid}/{userid}/{level}', function(Request $request, Response $response) {
+
+    $userid = $request->getAttribute('userid');
+    $custid = $request->getAttribute('custid');
+    $level = $request->getAttribute('level');
+
+
+        $sql = "UPDATE users SET
+                   level = :level
+             WHERE id = $userid AND custid = $custid";
+
+        echo $sql;
+
+        try{
+            // Get DB object
+            $db= new db();
+            $db = $db->connect();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindParam(':level', $level);
+
+
+            $stmt->execute();
+            $db = null;
+
+
+            echo '{"notice": {"Message": "User level updated"}';
+
+
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+
+        }
+
+
+
+
+
+
+});
 
 
 

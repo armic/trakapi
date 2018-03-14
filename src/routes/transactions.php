@@ -649,7 +649,7 @@ $app->get('/api/transaction/tools/list/{custid}', function(Request $request, Res
     }
 });
 
-// Load kit list for user selection. Kits that are issued or reserved will not be shown from the list
+// Load kit list for user selection. Kits that are issued or reserved or tool incomplete will not be shown from the list
 
 $app->get('/api/transaction/kits/list/{custid}', function(Request $request, Response $response) {
 
@@ -659,39 +659,35 @@ $app->get('/api/transaction/kits/list/{custid}', function(Request $request, Resp
 
     // Select statement
 
-    $sql=  "SELECT\n".
-        "lockers.locationid,\n".
-        "locations.description AS kitlocation,\n".
-        "kits.id,\n".
-        "kits.lockerid,\n".
-        "kits.description AS kitdescription,\n".
-        "kits.custid,\n".
-        "kits.reserved,\n".
-        "kits.qrcode,\n".
-        "kits.kitlocation,\n".
-        "kits.`status`,\n".
-        "lockers.description AS lockerdescription,\n".
-        "lockers.`code`\n".
-        "FROM\n".
-        "kits\n".
-        "INNER JOIN lockers ON lockers.id = kits.lockerid\n".
-        "INNER JOIN locations ON locations.id = lockers.locationid\n".
-        "WHERE\n".
-        "kits.custid = $custid AND\n".
-        "kits.reserved <> 1 AND\n".
-        "kits.`status` <> 1 AND\n".
-        "kits.`status` IS NOT NULL";
+
+    $sql=
+    "select k.custid, k.id,k.lockerid,k.description as kitname,k.count,k.reserved, k.status,k.kitlocation,k.qrcode,\n".
+    "(select count(*) from kittools t where t.status = 0 and t.custid = k.custid and t.kitid =  k.id) as tool_count,\n".
+    "l.id as lockerid,\n".
+    "l.description as lockerdescription,\n".
+    "l.code,\n".
+    "loc.description as location\n".
+    "from kits k\n".
+    "LEFT JOIN lockers l ON k.lockerid = l.id\n".
+    "LEFT JOIN locations loc ON k.kitlocation = loc.id\n".
+    "WHERE (k.custid = $custid AND k.reserved = 0 AND k.status = 0)\n".
+    "HAVING k.count = tool_count";
+
+
 
     try{
+
         // Get DB object
         $db= new db();
         $db = $db->connect();
+
         $stmt = $db->query($sql);
         $kits = $stmt->fetchAll(PDO::FETCH_OBJ);
 
         if($kits) {
             echo  '{"Available kits": '. json_encode($kits). '}';
             $tools = null;
+            $kittools = null;
             $db = null;
         } else {
             echo '{"error":"No kits found.")';
@@ -780,6 +776,31 @@ $app->post('/api/log/add/{custid}', function(Request $request, Response $respons
 
     }
 });
+
+// Check kit completeness
+
+$app->get('/api/transaction/kit/complete/{custid}/{kitid}', function(Request $request, Response $response) {
+
+    $custid = $request->getAttribute('custid');
+    $kitid = $request->getAttribute('kitid');
+
+    $trk = new clstrak();
+
+    if($trk->isKitComplete($custid,$kitid)) {
+
+        echo  '{"kit": complete}';
+
+    }else{
+
+        echo  '{"kit": incomplete}';
+    }
+
+
+});
+
+
+
+
 
 
 

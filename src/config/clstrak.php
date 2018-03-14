@@ -14,7 +14,7 @@
  * HENCHMAN SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE AND
  * ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED "AS IS".HENCHMAN
- *  HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ * HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
 
@@ -612,4 +612,75 @@ class clstrak
 
         }
     }
+
+
+    public function isKitComplete($custid, $kitid)
+    {
+
+        $sql = "SELECT\n" .
+            "kits.id,\n" .
+            "kits.count,\n" .
+            "FROM\n" .
+            "kits\n" .
+            "WHERE\n" .
+            "kits.custid = $custid AND\n" .
+            "kits.id = $kitid";
+
+        $sql_tool = "SELECT\n" .
+            "kittools.id,\n" .
+            "kittoolss.status,\n" .
+            "kittoolss.custid,\n" .
+            "kittoolss.kitid,\n" .
+            "FROM\n" .
+            "kittools\n" .
+            "WHERE\n" .
+            "kittools.custid = $custid AND\n" .
+            "kittools.kitid = $kitid AND\n" .
+            "kittools.status = 1";
+
+        $kits = null;
+        $kittools = null;
+        $kittoolcount = null;
+        $tool_available_count = null;
+
+
+        try {
+            // Get DB object
+            $db = new db();
+            $db = $db->connect();
+
+            foreach ($db->query($sql, PDO::FETCH_ASSOC) as $row) {
+
+                $kittoolcount = $row[count];
+            }
+
+
+            $stmt = $db->query($sql_tool);
+            $kittools = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            if ($kittools) {
+                $tool_available_count = $stmt->rowCount();
+                $kittools = null;
+                $db = null;
+            } else {
+
+                $tool_available_count = 0;
+            }
+
+
+            if ($kittoolcount == $tool_available_count) {
+
+                return true;
+            } else {
+
+                return false;
+            }
+
+
+        } catch (PDOException $e) {
+            return false;
+
+        }
+    }
+
 }
